@@ -21,10 +21,11 @@ class MockSignal:
 
 class MockAction:
     triggered = MockSignal()
-    def __init__(self, text, func):
-        print(f'called Action.__init__ with text `{text}`')
-        self.label = text
-        self.callback = func
+    def __init__(self, *args):
+        self.parent = args[-1]
+        self.label = args[-2] if len(args) > 1 else ''
+        self.icon = args[0] if len(args) > 2 else None
+        print(f'called Action.__init__ with args', args)
         self.shortcuts = []
         self.checkable = self.checked = False
         self.statustip = ''
@@ -155,10 +156,25 @@ class MockMenuBar:
 
 
 class MockMenu:
-    def __init__(self, text):
-        self.menutext = text
+    def __init__(self, *args):
+        if args:
+            self.menutext = args[0]
         self.actions = []
-    def addAction(self, text, func):
+    # def addAction(self, text, func):
+    def addAction(self, *args):
+        if len(args) == 1 and not isinstance(args[0], str):
+            print(f'called Menu.addAction')
+            self.actions.append(args[0])
+            return
+        # overloads: icon, text / text, callback, shortcut(s) / icon, text, callback, shortcut(s)
+        # geen idee wat ik hiervan allemaal gebruik
+        if isinstance(args[0], str):
+            text = args[0]
+            func = args[1] if len(args) > 1 else None
+        else:
+            text = args[1]
+            func = args[2] if len(args) > 2 else None
+        print(f'called Menu.addAction with args `{text}` {func}')
         newaction = MockAction(text, func)
         self.actions.append(newaction)
         return newaction
@@ -184,19 +200,19 @@ class MockTabWidget:
         print('called connect with args', args)
     currentChanged = types.SimpleNamespace(connect=mock_connect)
     def __init__(self, *args):
-        print('called QTabWidget.__init__')
+        print('called TabWidget.__init__')
         self._current = -1
     def setCurrentIndex(self, num):
-        print(f'called QTabWidget.setCurrentIndex with arg `{num}`')
+        print(f'called TabWidget.setCurrentIndex with arg `{num}`')
         self._current = num
     def currentIndex(self):
-        print('called QTabWidget.currentIndex')
+        print('called TabWidget.currentIndex')
         return self._current
     def currentWidget(self):
-        print('called QTabWidget.currentWidget')
+        print('called TabWidget.currentWidget')
         return None
     def addTab(self, *args):
-        print('called QTabWidget.addTab with args', args)
+        print('called TabWidget.addTab with args', args)
 
 
 class MockHeader:
@@ -279,7 +295,7 @@ class MockTreeWidget:
 
 class MockTreeItem:
     def __init__(self, *args):   # text='', data=''):
-        print('called TreeWidgetItem.__init__ with args', args)
+        print('called TreeItem.__init__ with args', args)
         self._text = []
         self._data = []
         if args:
@@ -359,13 +375,13 @@ class MockEditorWidget:
             print('called Editor.__init__')
         self._text = args[0] if args else ''
     def setMaximumWidth(self, number):
-        print(f'called Editor.setMaximumWidth to `{number}`')
+        print(f'called Editor.setMaximumWidth with arg `{number}`')
     def setMaximumHeight(self, number):
-        print(f'called Editor.setMaximumHeight to `{number}`')
+        print(f'called Editor.setMaximumHeight with arg `{number}`')
     def setMinimumWidth(self, number):
-        print(f'called Editor.setMinimumWidth to `{number}`')
+        print(f'called Editor.setMinimumWidth with arg `{number}`')
     def setMinimumHeight(self, number):
-        print(f'called Editor.setMinimumHeight to `{number}`')
+        print(f'called Editor.setMinimumHeight with arg `{number}`')
     def setWrapMode(self, *args):
         print('called Editor.setWrapMode')
     def setBraceMatching(self, *args):
@@ -431,7 +447,7 @@ class MockStatusBar:
 class MockDialog:
     def __init__(self, parent, *args):
         self.parent = parent
-        print('called Dialog.__init()__ with args `{}`'.format(args))
+        print('called Dialog.__init__ with args `{}`'.format(args))
     def exec_(self):
         print('called Dialog.exec_')
         # self.parent.dialog_data = {'x': 'y'}
@@ -533,13 +549,13 @@ class MockLabel:
         else:
             print('called Label.__init__')
     def setVisible(self, value):
-        print(f'called Label.setVisible to `{value}`')
+        print(f'called Label.setVisible with arg `{value}`')
     def setMinimumWidth(self, number):
-        print(f'called Label.setMinimumWidth to `{number}`')
+        print(f'called Label.setMinimumWidth with arg `{number}`')
     def setMinimumHeight(self, number):
-        print(f'called Label.setMinimumHeight to `{number}`')
+        print(f'called Label.setMinimumHeight with arg `{number}`')
     def setMaximumWidth(self, number):
-        print(f'called Label.setMaximumWidth to `{number}`')
+        print(f'called Label.setMaximumWidth with arg `{number}`')
     def setText(self, text):
         print(f'called Label.setText with arg `{text}`')
         self._text = text
@@ -552,7 +568,7 @@ class MockLabel:
 class MockCheckBox:
     def __init__(self, *args):
         print('called CheckBox.__init__')
-        self.checked = None
+        self.checked = False
         self.textvalue = args[0] if args else ''
     def setEnabled(self, value):
         print(f'called CheckBox.setEnabled with arg {value}')
@@ -573,9 +589,9 @@ class MockComboBox:
         self._items = kwargs.get('items', [])
         self._index = 1
     def setMaximumWidth(self, number):
-        print(f'called ComboBox.setMaximumWidth to `{number}`')
+        print(f'called ComboBox.setMaximumWidth with arg `{number}`')
     def setMinimumWidth(self, number):
-        print(f'called ComboBox.setMinimumWidth to `{number}`')
+        print(f'called ComboBox.setMinimumWidth with arg `{number}`')
     def clear(self):
         print('called ComboBox.clear')
     def clearEditText(self):
@@ -587,11 +603,9 @@ class MockComboBox:
     def height(self):
         return 100
     def setEditable(self, value):
-        print('called ComboBox.setEditable with arg `{value}`')
-        # self.checked = value ??
+        print(f'called ComboBox.setEditable with arg `{value}`')
     def setCurrentIndex(self, value):
         print(f'called ComboBox.setCurrentIndex with arg `{value}`')
-        # self.checked = value ??
         self._index = value
     def currentIndex(self):
         print('called ComboBox.currentIndex')
@@ -602,7 +616,7 @@ class MockComboBox:
         print('called ComboBox.currentText')
         return 'current text'
     def setToolTip(self, value):
-        print(f'called combo.setToolTip({value})')
+        print(f'called ComboBox.setToolTip({value})')
     def setFocus(self):
         print('called ComboBox.setFocus')
     def count(self):
@@ -610,6 +624,7 @@ class MockComboBox:
         return 0
     def itemText(self, number):
         print(f'called ComboBox.itemText with value `{number}`')
+        return str(number)
 
 
 class MockPushButton:
@@ -618,8 +633,7 @@ class MockPushButton:
         print('called PushButton.__init__ with args', args)
         self._text = args[0] if args else ''
     def setMaximumWidth(self, number):
-        print(f'called PushButton.setMaximumWidth to `{number}`')
-        print(f'called PushButton.setText with arg `{value}`')
+        print(f'called PushButton.setMaximumWidth with arg `{number}`')
     def setEnabled(self, value):
         print(f'called PushButton.setEnabled with arg `{value}`')
     def setDefault(self, value):
@@ -628,10 +642,10 @@ class MockPushButton:
         print(f'called PushButton.setIcon with arg `{value}`')
     def setIconSize(self, arg):
         print(f'called PushButton.setIconSize with arg of type {type(arg)}')
-        print('called PushButton.__init__')
     def text(self):
         return self._text
     def setText(self, value):
+        print(f'called PushButton.setText with arg `{value}`')
         self._text = value
     def setMenu(self, *args):
         print('called PushButton.setMenu()')
@@ -644,13 +658,22 @@ class MockPushButton:
 class MockLineEdit:
     def __init__(self, *args):
         print('called LineEdit.__init__')
-        self._text = args[0] if args else '..'
+        for arg in args:
+            if isinstance(arg, str):
+                self._text = arg
+                break
+        else:
+            self._text = ''
     def setReadOnly(self, value):
         print(f'called LineEdit.setReadOnly with arg `{value}`')
     def setMaximumHeight(self, value):
         print(f'called LineEdit.setMaximumHeight with arg `{value}`')
     def setMinimumHeight(self, value):
         print(f'called LineEdit.setMinimumHeight with arg `{value}`')
+    def setMaximumWidth(self, value):
+        print(f'called LineEdit.setMaximumWidth with arg `{value}`')
+    def setMinimumWidth(self, value):
+        print(f'called LineEdit.setMinimumWidth with arg `{value}`')
     def clear(self):
         print('called LineEdit.clear')
     def setText(self, text):
@@ -699,14 +722,14 @@ class MockMessageBox:
     def exec_(self, *args):
         print(f'called MessageBox.exec_')
     def clickedButton(self):
-        print(f'called QMessageBox.clickedButton')
+        print(f'called MessageBox.clickedButton')
         return 'button'
     def information(parent, caption, message):
         print(f'called MessageBox.information with args `{caption}` `{message}`')
     def question(parent, caption, message, buttons, default):
         print('called MessageBox.question with args'
               f' `{caption}` `{message}` `{buttons}` `{default}`')
-        return No  # 8
+        return 8
 
 
 class MockListBox:
@@ -718,15 +741,15 @@ class MockListBox:
         except IndexError:
             self.list = []
     def setVisible(self, value):
-        print(f'called List.setVisible to `{value}`')
+        print(f'called List.setVisible with arg `{value}`')
     def setMinimumWidth(self, number):
-        print(f'called List.setMinimumWidth to `{number}`')
+        print(f'called List.setMinimumWidth with arg `{number}`')
     def setMinimumHeight(self, number):
-        print(f'called List.setMinimumHeight to `{number}`')
+        print(f'called List.setMinimumHeight with arg `{number}`')
     def __len__(self):
         return len(self.list)
     def clear(self):
-        print('called List.clear()')
+        print('called List.clear')
     def setSelectionMode(self, *args):
         print('called List.setSelectionMode')
     def addItems(self, itemlist):
@@ -737,8 +760,13 @@ class MockListBox:
         print(f'called List.setCurrentRow with rownumber {row}')
     def item(self, *args):
         return self.list[args[0]]
-    def setFocus(self, value):
-        print(f'called List.setFocus with arg `{value}`')
+    # def setFocus(self, value):
+    #     print(f'called List.setFocus with arg `{value}`')
+    def setFocus(self, *args):
+        if args:
+            print(f'called List.setFocus with arg `{args[0]}`')
+        else:
+            print(f'called List.setFocus')
     def selectedItems(self):
         print(f'called List.selectedItems on `{self.list}`')
     def takeItem(self, value):
