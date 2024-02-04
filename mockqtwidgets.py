@@ -1,7 +1,6 @@
 """redefine PyQt widgets to make testing easier (or possible at all)
 """
 import types
-import PyQt5.QtWidgets as qtw
 
 
 class MockCursor:
@@ -9,9 +8,9 @@ class MockCursor:
         print(f'called Cursor with arg {arg}')
 
 
-class MockControl:
-    def setVisible(self, value):
-        print(f'called control.setVisible with args `{type(self)}`, `{value}`')
+# class MockControl:
+#     def setVisible(self, value):
+#         print(f'called control.setVisible with args `{type(self)}`, `{value}`')
 
 
 class MockSignal:
@@ -55,8 +54,11 @@ class MockApplication:
     def __init__(self, *args):
         print('called Application.__init__')
 
-    def exec_(self):
+    def exec_(self):  # Qt5
         print('called Application.exec_')
+
+    def exec(self):  # Qt6
+        print('called Application.exec')
 
     def setOverrideCursor(self, arg):
         print(f'called Application.setOverrideCursor with arg of type {type(arg)}')
@@ -98,6 +100,9 @@ class MockScrollBar:
 
 
 class MockScrollArea:
+    def __init__(self, *args):
+        print('called ScrollArea.__init__ with args', args)
+
     def setWidget(self, arg):
         print(f'called ScrollArea.setWidget with arg of type `{type(arg)}`')
 
@@ -120,7 +125,7 @@ class MockSize:
 
 
 class MockMainWindow:
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         print('called MainWindow.__init__')
         self.app = MockApplication()
 
@@ -137,7 +142,11 @@ class MockMainWindow:
         print(f'called MainWindow.setWindowTitle to `{text}`')
 
     def setWindowIcon(self, *args):
-        print('called MianWindow.setWindowIcon')
+        print('called MainWindow.setWindowIcon')
+
+    def menuBar(self):
+        print('called mainWindow.menuBar')
+        return MockMenuBar()
 
     def setCentralWidget(self, arg):
         print(f'called MainWidget.setCentralWindow with arg of type `{type(arg)}`')
@@ -155,8 +164,11 @@ class MockFrame:
     def setFrameShape(self, arg):
         print(f'called Frame.setFrameShape with arg `{arg}`')
 
+    def setFrameStyle(self, arg):
+        print(f'called Frame.setFrameStyle with arg `{arg}`')
+
     def setLayout(self, arg):
-        print(f'called Frame.setLayout with arg of type `{type(arg)}`')
+        print(f'called Frame.setLayout with arg of type {type(arg)}')
 
 
 class MockPixmap:
@@ -182,12 +194,15 @@ class MockIcon:
 
 class MockMenuBar:
     def __init__(self):
+        print('called MenuBar.__init__')
         self.menus = []
 
     def clear(self):
+        print('called MenuBar.clear')
         self.menus = []
 
     def addMenu(self, text):
+        print('called MenuBar.addMenu with arg ', text)
         newmenu = MockMenu(text)
         self.menus.append(newmenu)
         return newmenu
@@ -195,6 +210,7 @@ class MockMenuBar:
 
 class MockMenu:
     def __init__(self, *args):
+        print('called Menu.__init__ with args', args)
         if args:
             self.menutext = args[0]
         self.actions = []
@@ -219,6 +235,7 @@ class MockMenu:
         return newaction
 
     def addSeparator(self):
+        print('called Menu.addSeparator')
         newaction = MockAction('-----', None)
         self.actions.append(newaction)
         return newaction
@@ -239,9 +256,8 @@ class MockSplitter:
 
 
 class MockTabWidget:
-    def mock_connect(self, *args):
-        print('called TabWidget.connect with args', self, args)
-    currentChanged = types.SimpleNamespace(connect=mock_connect)
+    currentChanged = MockSignal()
+    tabCloseRequested = MockSignal()
 
     def __init__(self, *args):
         print('called TabWidget.__init__')
@@ -258,8 +274,31 @@ class MockTabWidget:
     def currentWidget(self):
         print('called TabWidget.currentWidget')
 
-    def addTab(self, *args):
-        print('called TabWidget.addTab with args', args)
+    def setCurrentWidget(self, arg):
+        print(f'called TabWidget.setCurrentWidget with arg `{arg}`')
+
+    def addTab(self, tab, title):
+        print(f'called TabWidget.addTab with args `{tab!s}` `{title}`')
+
+    def removeTab(self, tab):
+        print('called TabWidget.removeTab with arg', tab)
+
+    def setTabText(self, *args):
+        print('called TabWidget.setTabtext with args', args)
+
+    def tabText(self, *args):
+        print('called TabWidget.tabtext with args', args)
+        return 'tab text'
+
+    def count(self):
+        print('called TabWidget.count')
+        return 'number of tabs'
+
+    def widget(self, arg):
+        print('called TabWidget.widget with arg', arg)
+
+    def clear(self):
+        print('called TabWidget.clear')
 
 
 class MockHeader:
@@ -272,7 +311,10 @@ class MockHeader:
         print(f'called Header.setStretchLastSection with arg {value}')
 
     def setSectionResizeMode(self, col, mode):
-        print(f'called Header.setSectionResixeMode for col {col} mode {mode}')
+        print(f'called Header.setSectionResizeMode for col {col} mode {mode}')
+
+    def resizeSection(self, col, width):
+        print(f'called Header.resizeSection for col {col} width {width}')
 
 
 class MockTreeWidget:
@@ -401,6 +443,10 @@ class MockTreeItem:
         print(f'called TreeItem.data for col {col} role {role}')
         return self._data[col]
 
+    def parent(self):
+        print('called TreeItem.parent')
+        return 'parent'
+
     def addChild(self, item):
         print('called TreeItem.addChild')
         self.subitems.append(item)
@@ -432,6 +478,15 @@ class MockTreeItem:
 
     def setFont(self, *args):
         print('called TreeItem.setFont')
+
+    def setForeground(self, *args):
+        print('called TreeItem.setForeground with args', args)
+
+    def setTextAlignment(self, *args):
+        print('called TreeItem.setTextAlignment with args', args)
+
+    def setToolTip(self, *args):
+        print('called TreeItem.setTooltip with args', args)
 
 
 class MockFont:
@@ -544,15 +599,16 @@ class MockEditorWidget:
 
 
 class MockSysTrayIcon:
+    activated = MockSignal()
+
     def __init__(self, *args):
         print('called TrayIcon.__init__')
-        self.activated = MockSignal()
 
     def showMessage(self, *args):
-        print('called TrayIcon.showMessage')
+        print('called TrayIcon.showMessage with args', args)
 
     def setToolTip(self, *args):
-        print('called TrayIcon.setToolTip')
+        print('called TrayIcon.setToolTip with args', args)
 
     def hide(self):
         print('called TrayIcon.hide')
@@ -562,42 +618,79 @@ class MockSysTrayIcon:
 
 
 class MockStatusBar:
+    def __init__(self, *args):
+        print('called StatusBar.__init__ with args', args)
+
     def showMessage(self, text):
         print(f'called StatusBar.showMessage with arg `{text}`')
 
 
 class MockDialog:
-    def __init__(self, parent, *args):
+    def __init__(self, parent, *args, **kwargs):
         self.parent = parent
-        print('called Dialog.__init__ with args', args)
+        print('called Dialog.__init__ with args', parent, args, kwargs)
 
-    def exec_(self):
+    def exec_(self):  # Qt5
         print('called Dialog.exec_')
-        # self.parent.dialog_data = {'x': 'y'}
-        # return gui.qtw.QDialog.Accepted
+
+    def exec(self):  # Qt6
+        print('called Dialog.exec')
 
     def setWindowTitle(self, *args):
         print('called Dialog.setWindowTitle with args', args)
+
+    def setWindowIcon(self, *args):
+        print('called Dialog.setWindowIcon with args', args)
 
     def setLayout(self, *args):
         print('called Dialog.setLayout')
 
     def accept(self):
         print('called Dialog.accept')
-        return qtw.QDialog.Accepted
+        return 'Accepted'
 
     def reject(self):
         print('called Dialog.reject')
-        return qtw.QDialog.Rejected
+        return 'Rejected'
+
+    def done(self, value):
+        print(f'called Dialog.done with arg `{value}`')
+
+
+def get_item(parent, *args, **kwargs):
+    print('called InputDialog.getItem with args', parent, args, kwargs)
+    return '', False
+
+
+def get_text(parent, *args, **kwargs):
+    print('called InputDialog.getText with args', parent, args, kwargs)
+    return '', False
 
 
 class MockInputDialog:
+    getText = staticmethod(get_text)
+    getItem = staticmethod(get_item)
+
     def __init__(self, *args, **kwargs):
         print('called InputDialog.__init__')
 
-    def getItem(self, *args, **kwargs):
-        print('called InputDialog.getItem with args', args, kwargs)
-        return '', False
+
+def get_open(parent, *args, **kwargs):
+    print('called FileDialog.getOpenFilename with args', parent, args, kwargs)
+    return '', False  # canceled
+
+
+def get_save(parent, *args, **kwargs):
+    print('called FileDialog.getSaveFilename with args', parent, args, kwargs)
+    return '', False  # canceled
+
+
+class MockFileDialog:
+    getOpenFileName = staticmethod(get_open)
+    getSaveFileName = staticmethod(get_save)
+
+    def __init__(self, *args, **kwargs):
+        print('called Filedialog.__init__')
 
 
 class MockVBoxLayout:
@@ -759,6 +852,9 @@ class MockComboBox:
     def clearEditText(self):
         print('called ComboBox.clearEditText')
 
+    def setEditText(self, text):
+        print(f'called ComboBox.setEditText with arg `{text}`')
+
     def addItem(self, item):
         print(f'called ComboBox.addItems with arg `{item}`')
 
@@ -804,8 +900,8 @@ class MockComboBox:
 class MockPushButton:
     clicked = MockSignal()
 
-    def __init__(self, *args):
-        print('called PushButton.__init__ with args', args)
+    def __init__(self, *args, **kwargs):
+        print('called PushButton.__init__ with args', args, kwargs)
         self._text = args[0] if args else ''
 
     def setMaximumWidth(self, number):
@@ -838,6 +934,30 @@ class MockPushButton:
 
     def setToolTip(self, value):
         print(f'called PushButton.setToolTip with arg `{value}`')
+
+
+class MockRadioButton:
+    clicked = MockSignal()
+
+    def __init__(self, *args, **kwargs):
+        print('called RadioButton.__init__ with args', args, kwargs)
+        self._text = args[0] if args else ''
+        self._checked = False
+
+    def isChecked(self):
+        print('called PushButton.isChecked')
+        return self._checked
+
+    def setChecked(self, value):
+        print(f'called PushButton.setChecked with arg `{value}`')
+        self._checked = value
+
+    def text(self):
+        return self._text
+
+    def setText(self, value):
+        print(f'called PushButton.setText with arg `{value}`')
+        self._text = value
 
 
 class MockLineEdit:
@@ -893,14 +1013,21 @@ class MockButtonBox:
     def __init__(self, *args):
         print('called ButtonBox.__init__ with args', args)
 
+    def addButton(self, *args):
+        print('called ButtonBox.addButton with args', args)
+
 
 def show_information(parent, caption, message):
-    print(f'called MessageBox.information with args `{caption}` `{message}`')
+    print(f'called MessageBox.information with args `{parent}` `{caption}` `{message}`')
+
+
+def show_critical(parent, caption, message):
+    print(f'called MessageBox.critical with args `{parent}` `{caption}` `{message}`')
 
 
 def ask_question(parent, caption, message, buttons, default):
     print('called MessageBox.question with args'
-          f' `{caption}` `{message}` `{buttons}` `{default}`')
+          f' `{parent}` `{caption}` `{message}` `{buttons}` `{default}`')
     return MockMessageBox.No
 
 
@@ -912,6 +1039,7 @@ class MockMessageBox:
     AcceptRole = 1
     Information = 2
     information = staticmethod(show_information)
+    critical = staticmethod(show_critical)
     question = staticmethod(ask_question)
 
     def __init__(self, *args, **kwargs):
@@ -920,8 +1048,11 @@ class MockMessageBox:
     def setText(self, text):
         print(f'called MessageBox.setText with arg `{text}`')
 
-    def setInformativeText(self, *args):
-        print('called MessageBox.setInformativeText')
+    def setWindowTitle(self, arg):
+        print(f'called MessageBox.setWindowTitle with arg `{arg}`')
+
+    def setInformativeText(self, text):
+        print(f'called MessageBox.setInformativeText with arg `{text}`')
 
     def setStandardButtons(self, *args):
         print('called MessageBox.setStandardButtons')
@@ -935,8 +1066,11 @@ class MockMessageBox:
     def addButton(self, *args):
         print(f'called MessageBox.addButton with arg `{args}`')
 
-    def exec_(self, *args):
+    def exec_(self, *args):  # Qt5
         print('called MessageBox.exec_')
+
+    def exec(self, *args):  # Qt6
+        print('called MessageBox.exec')
 
     def clickedButton(self):
         print('called MessageBox.clickedButton')
