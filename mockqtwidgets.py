@@ -1166,3 +1166,10 @@ class MockLexerDiff:
 
     def setDefaultFont(self, *args):
         print('called Editor.setDefaultFont')
+
+class MockWebEngineView:
+    def __init__(self, *args):
+        print('called WebEngineView.__init__()')
+
+    def setHtml(self, *args):
+        print('called WebEngineView.setHtml() with args', args)
