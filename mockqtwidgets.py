@@ -723,6 +723,10 @@ class MockVBoxLayout:
     def count(self):
         return self._count
 
+    def removeWidget(self, *args):
+        print(f'called VBox.removeWidget with arg of type {type(args[0])}')
+        self._count -= 1
+
 
 class MockHBoxLayout:
     def __init__(self, *args):
@@ -834,6 +838,7 @@ class MockCheckBox:
 
 class MockComboBox:
     currentIndexChanged = MockSignal()
+    activated = MockSignal()
 
     def __init__(self, *args, **kwargs):
         print('called ComboBox.__init__')
@@ -895,6 +900,9 @@ class MockComboBox:
     def itemText(self, number):
         print(f'called ComboBox.itemText with value `{number}`')
         return str(number)
+
+    def close(self):
+        print('called ComboBox.close')
 
 
 class MockPushButton:
