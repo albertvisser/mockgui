@@ -138,14 +138,24 @@ class MockMainWindow:
     def show(self):
         print('called MainWindow.show')
 
+    def close(self):
+        print('called MainWindow.close')
+
     def setWindowTitle(self, text):
         print(f'called MainWindow.setWindowTitle to `{text}`')
 
     def setWindowIcon(self, *args):
         print('called MainWindow.setWindowIcon')
 
+    def setWindowModality(self, arg):
+        print(f"called MainWindow.setWindowModality with arg '{arg}'")
+
+    def statusBar(self):
+        print('called MainWindow.statusBar')
+        return MockStatusBar()
+
     def menuBar(self):
-        print('called mainWindow.menuBar')
+        print('called MainWindow.menuBar')
         return MockMenuBar()
 
     def setCentralWidget(self, arg):
@@ -157,6 +167,7 @@ class MockMainWindow:
 
 class MockFrame:
     HLine = '---'
+    Box = '[]'
 
     def __init__(self, parent=None):
         print('called Frame.__init__')
@@ -185,8 +196,8 @@ class MockPixmap:
 
 
 class MockIcon:
-    def __init__(self, *args):
-        print(f'called Icon.__init__ with arg `{args[0]}`')
+    def __init__(self, arg):
+        print(f'called Icon.__init__ with arg `{arg}`')
 
     def fromTheme(self, *args):
         print('called Icon.fromTheme with args', args)
@@ -306,6 +317,7 @@ class MockHeader:
 
     def __init__(self, *args):
         print('called Header.__init__')
+        self.items = []
 
     def setStretchLastSection(self, value):
         print(f'called Header.setStretchLastSection with arg {value}')
@@ -315,6 +327,9 @@ class MockHeader:
 
     def resizeSection(self, col, width):
         print(f'called Header.resizeSection for col {col} width {width}')
+
+    def setVisible(self, value):
+        print(f"called Header.setVisible with args '{value}'")
 
 
 class MockTreeWidget:
@@ -342,6 +357,9 @@ class MockTreeWidget:
 
     def setHeaderLabels(self, label_list):
         print(f'called Tree.setHeaderLabels with arg `{label_list}`')
+
+    def setUniformRowHeights(self, count):
+        print(f'called Tree.setUniformRowHeights with arg `{count}`')
 
     def headerItem(self):
         return MockTreeItem()
@@ -463,6 +481,10 @@ class MockTreeItem:
 
     def indexOfChild(self, item):
         return self.subitems.index(item)
+
+    def takeChild(self, itemseq):
+        print('called TreeItem.takeChild')
+        return f'child no. {itemseq}'
 
     def removeChild(self, item):
         print('called TreeItem.removeChild')
@@ -1094,6 +1116,7 @@ class MockListBox:
             self.list = args[0]
         except IndexError:
             self.list = []
+        self.row = -1
 
     def setVisible(self, value):
         print(f'called List.setVisible with arg `{value}`')
@@ -1105,6 +1128,9 @@ class MockListBox:
         print(f'called List.setMinimumHeight with arg `{number}`')
 
     def __len__(self):
+        return len(self.list)
+
+    def count(self):
         return len(self.list)
 
     def clear(self):
@@ -1121,9 +1147,14 @@ class MockListBox:
 
     def setCurrentRow(self, row):
         print(f'called List.setCurrentRow with rownumber {row}')
+        self.row = row
 
-    def item(self, *args):
-        return self.list[args[0]]
+    def currentRow(self):
+        print(f'called List.currentRow')
+        return 'current row'
+
+    def item(self, row):
+        return self.list[row]
     # def setFocus(self, value):
     #     print(f'called List.setFocus with arg `{value}`')
 
@@ -1137,14 +1168,14 @@ class MockListBox:
         print(f'called List.selectedItems on `{self.list}`')
 
     def takeItem(self, value):
-        print(f'called List.takeItem with arg `{value}` on `{self.list}`')
+        print(f'called List.takeItem with arg `{value}`')  # on `{self.list}`')
 
     def row(self, value):
-        print(f'called List.row with arg `{value}` on `{self.list}`')
+        print(f'called List.row with arg `{value}`')  #  on `{self.list}`')
         return value
 
     def addItem(self, value):
-        print(f'called List.addItem with arg `{value}` on `{self.list}`')
+        print(f'called List.addItem with arg `{value}`')  # on `{self.list}`')
         self.list.append(value)
 
 
@@ -1156,8 +1187,74 @@ class MockListItem:
     def text(self):
         return self.name
 
+    def setText(self, name):
+        print(f"called ListItem.setText with arg '{name}'")
+        self.name = name
+
     def setSelected(self, arg):
         print(f'called ListItem.setSelected with arg `{arg}` for `{self.name}`')
+
+
+class MockTableItem:
+    def __init__(self, arg='xy'):
+        print('called TableItem.__init__ with arg', arg)
+        self._text = arg
+    def text(self):
+        return self._text
+
+
+class MockTable:
+    def __init__(self, arg):
+        print('called Table.__init__ with arg', arg)
+        self._cols = 0
+        self._rows = 0
+        self._header = MockHeader()
+        self._vhead = MockHeader()
+
+    def setColumnCount(self, count):
+        print(f"called Table.setColumnCount with arg '{count}'")
+        self._cols = count
+
+    def setRowCount(self, count):
+        print(f"called Table.setRowCount with arg '{count}'")
+        self._rows = count
+
+    def rowCount(self):
+        print(f"called Table.rowCount")
+        return self._rows
+
+    def ColumnCount(self):
+        print(f"called Table.ColumnCount")
+        return self._cols
+
+    def setHorizontalHeaderLabels(self, headerlist):
+        print(f"called Table.setHorizontalHeaderLabels with arg '{headerlist}'")
+        for item in headerlist:
+            self._header.items.append(item)
+
+    def horizontalHeader(self):
+        print("called Table.horizontalHeader")
+        return self._header
+
+    def verticalHeader(self):
+        print("called Table.verticalHeader")
+        return self._vhead
+
+    def setTabKeyNavigation(self, value):
+        print(f"called Table.setTabKeyNavigation with arg {value}")
+
+    def insertRow(self, rownum):
+        print(f"called Table.insertRow with arg '{rownum}'")
+
+    def currentRow(self):
+        print("called Table.currentRow")
+        return 2
+
+    def removeRow(self, rownum):
+        print(f"called Table.removeRow with arg '{rownum}'")
+
+    def setItem(self, x, y, item):
+        print(f"called Table.setItem with args ({x}, {y}, item of {type(item)}")
 
 
 class MockFontMetrics:
@@ -1174,6 +1271,7 @@ class MockLexerDiff:
 
     def setDefaultFont(self, *args):
         print('called Editor.setDefaultFont')
+
 
 class MockWebEngineView:
     def __init__(self, *args):
