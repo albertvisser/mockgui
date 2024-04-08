@@ -66,6 +66,17 @@ class MockApplication:
     def restoreOverrideCursor(self):
         print('called Application.restoreOverrideCursor')
 
+    def clipboard():
+        print('called Application.clipboard')
+        return MockClipBoard()
+
+
+class MockClipBoard:
+    def __init__(self):
+        print('called ClipBoard.__init__')
+    def setText(self, data):
+        print(f"called Clipboard.setText with arg '{data}'")
+
 
 class MockWidget:
     def __init__(self, *args):
@@ -576,6 +587,9 @@ class MockEditorWidget:
     def setFont(self, data):
         print('called Editor.setFont')
 
+    def setCurrentFont(self, data):
+        print('called Editor.setCurrentFont')
+
     def setMarginsFont(self, data):
         print('called Editor.setMarginsFont')
 
@@ -707,9 +721,15 @@ def get_save(parent, *args, **kwargs):
     return '', False  # canceled
 
 
+def get_dir(parent, *args, **kwargs):
+    print('called FileDialog.getExistingDirectory with args', parent, args, kwargs)
+    return ''  # canceled
+
+
 class MockFileDialog:
     getOpenFileName = staticmethod(get_open)
     getSaveFileName = staticmethod(get_save)
+    getExistingDirectory = staticmethod(get_dir)
 
     def __init__(self, *args, **kwargs):
         print('called Filedialog.__init__')
@@ -838,6 +858,8 @@ class MockLabel:
 
 
 class MockCheckBox:
+    clicked = MockSignal()
+
     def __init__(self, *args):
         print('called CheckBox.__init__')
         self.checked = False
@@ -850,6 +872,10 @@ class MockCheckBox:
         print(f'called CheckBox.setChecked with arg {value}')
         self.checked = value
 
+    def toggle(self):
+        print(f'called CheckBox.toggle')
+        self.checked = not self.checked
+
     def isChecked(self):
         print('called CheckBox.isChecked')
         return self.checked
@@ -860,6 +886,7 @@ class MockCheckBox:
 
 class MockComboBox:
     currentIndexChanged = MockSignal()
+    editTextChanged = {str: MockSignal()}
     activated = MockSignal()
 
     def __init__(self, *args, **kwargs):
@@ -888,6 +915,9 @@ class MockComboBox:
     def addItems(self, itemlist):
         print(f'called ComboBox.addItems with arg {itemlist}')
 
+    def insertItems(self, row, itemlist):
+        print(f'called ComboBox.insertItems with args ({row}, {itemlist})')
+
     def height(self):
         return 100
 
@@ -914,6 +944,9 @@ class MockComboBox:
 
     def setFocus(self):
         print('called ComboBox.setFocus')
+
+    def setCompleter(self, arg):
+        print('called ComboBox.setCompleter with arg', arg)
 
     def count(self):
         print('called ComboBox.count')
@@ -975,19 +1008,22 @@ class MockRadioButton:
         self._checked = False
 
     def isChecked(self):
-        print('called PushButton.isChecked')
+        print('called RadioButton.isChecked')
         return self._checked
 
     def setChecked(self, value):
-        print(f'called PushButton.setChecked with arg `{value}`')
+        print(f'called RadioButton.setChecked with arg `{value}`')
         self._checked = value
 
     def text(self):
         return self._text
 
     def setText(self, value):
-        print(f'called PushButton.setText with arg `{value}`')
+        print(f'called RadioButton.setText with arg `{value}`')
         self._text = value
+
+    def setFocus(self):
+        print('called RadioButton.setFocus')
 
 
 class MockLineEdit:
@@ -1047,11 +1083,45 @@ class MockButtonBox:
         print('called ButtonBox.addButton with args', args)
 
 
-def show_information(parent, caption, message):
+class MockButtonGroup:
+    def __init__(self, *args):
+        print('called ButtonGroup.__init__ with args', args)
+        self._buttons = {}
+        self._maxid = 0
+
+    def addButton(self, button):
+        print(f"called ButtonGroup.addButton with arg of type {type(button)}")
+        self._maxid += 1
+        self._buttons[self._maxid] = button
+
+    def button(self, button_id):
+        print(f"called ButtonGroup.button with arg '{button_id}'")
+        return self._buttons[button_id]
+
+    def id(self, button):
+        print(f"called ButtonGroup.id with arg of type {type(button)}")
+        for button_id, button_ in self._buttons.items():
+            if button_ is button:
+                return button_id
+        return None
+
+    def buttons(self, *args):
+        print('called ButtonGroup.buttons')
+        return list(self._buttons.values())
+
+    def checkedButton(self):
+        print('called ButtonGroup.checkedButton')
+        for button in self._buttons.values():
+            if button.isChecked():
+                return button
+        return None
+
+
+def show_information(parent, caption, message, *args):
     print(f'called MessageBox.information with args `{parent}` `{caption}` `{message}`')
 
 
-def show_critical(parent, caption, message):
+def show_critical(parent, caption, message, *args):
     print(f'called MessageBox.critical with args `{parent}` `{caption}` `{message}`')
 
 
@@ -1107,6 +1177,20 @@ class MockMessageBox:
         return 'button'
 
 
+class MockSpinBox:
+    def __init__(self, *args):
+        print('called SpinBox.__init__')
+        self._value = 0
+    def setMinimum(self, count):
+        print(f"called SpinBox.setMinimum with arg '{count}'")
+    def setValue(self, arg):
+        print(f"called SpinBox.setValue with arg '{arg}'")
+        self._value = arg
+    def value(self):
+        print(f"called SpinBox.value")
+        return self._value
+
+
 class MockListBox:
     itemDoubleClicked = MockSignal()
 
@@ -1116,7 +1200,6 @@ class MockListBox:
             self.list = args[0]
         except IndexError:
             self.list = []
-        self.row = -1
 
     def setVisible(self, value):
         print(f'called List.setVisible with arg `{value}`')
@@ -1142,6 +1225,9 @@ class MockListBox:
     def addItems(self, itemlist):
         print(f'called List.addItems with arg `{itemlist}`')
 
+    def insertItems(self, row, itemlist):
+        print(f'called List.insertItems with args ({row}, {itemlist})')
+
     def currentItem(self):
         pass
 
@@ -1165,7 +1251,7 @@ class MockListBox:
             print('called List.setFocus')
 
     def selectedItems(self):
-        print(f'called List.selectedItems on `{self.list}`')
+        print('called List.selectedItems')
 
     def takeItem(self, value):
         print(f'called List.takeItem with arg `{value}`')  # on `{self.list}`')
