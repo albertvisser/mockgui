@@ -441,8 +441,25 @@ class MockDialog:
     def confirm(self):
         return 'confirmation data'
 
-    def Destroy(self):
-        print('called dialog.Destroy()')
+        print('called dialog.Destroy')
+
+    def SetTitle(self, text):
+        print(f"called dialog.SetTitle with arg '{text}'")
+
+    def SetAffirmativeId(self, *args):
+        print('called dialog.SetAffirmativeId')
+
+    def GetId(self, *args):
+        print('called dialog.GetId')
+
+    def SetSizer(self, text):
+        print(f"called dialog.SetSizer")
+
+    def SetAutoLayout(self, *args):
+        print('called dialog.SetAutoLayout')
+
+    def Layout(self, *args):
+        print('called dialog.Layout')
 
 
 class MockTextDialog:
