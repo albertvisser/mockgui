@@ -965,8 +965,13 @@ class MockInputDialog:
 
 
 def get_open(parent, *args, **kwargs):
-    print('called FileDialog.getOpenFilename with args', parent, args, kwargs)
+    print('called FileDialog.getOpenFileName with args', parent, args, kwargs)
     return '', False  # canceled
+
+
+def get_open2(parent, *args, **kwargs):
+    print('called FileDialog.getOpenFileNames with args', parent, args, kwargs)
+    return [], False  # canceled
 
 
 def get_save(parent, *args, **kwargs):
@@ -981,6 +986,7 @@ def get_dir(parent, *args, **kwargs):
 
 class MockFileDialog:
     getOpenFileName = staticmethod(get_open)
+    getOpenFileNames = staticmethod(get_open2)
     getSaveFileName = staticmethod(get_save)
     getExistingDirectory = staticmethod(get_dir)
 
