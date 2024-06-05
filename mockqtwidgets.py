@@ -1,16 +1,72 @@
 """redefine PyQt widgets to make testing easier (or possible at all)
 """
+import contextlib
 import types
+MAXUNDO = 9
 
 
 class MockCursor:
+    def __init__(self, arg=None):
+        if arg:
+            print(f'called Cursor.__init__ with arg {arg}')
+        else:
+            print('called Cursor.__init__')
+
+    def insertImage(self, arg):
+        print(f'called Cursor.insertImage with arg {arg}')
+
+
+class MockTextCursor:
+    def __init__(self):
+        print('called TextCursor.__init__')
+
+    def hasSelection(self):
+        print('called TextCursor.hasSelection')
+        return False
+
+    def select(self, arg):
+        print(f'called TextCursor.select with arg {arg}')
+
+    def mergeCharFormat(self, arg):
+        print(f'called TextCursor.mergeCharFormat with arg {arg}')
+
+
+class MockColor:
     def __init__(self, arg):
-        print(f'called Cursor with arg {arg}')
+        self._colortext = f"'color {arg}'"
+
+    def __str__(self):
+        return self._colortext
 
 
 # class MockControl:
 #     def setVisible(self, value):
 #         print(f'called control.setVisible with args `{type(self)}`, `{value}`')
+class MockEvent:
+    def __init__(self, **kwargs):
+        if 'key' in kwargs:
+            self._key = kwargs['key']
+
+    def key(self):
+        return self._key
+
+    def x(self):
+        return 'x'
+
+    def y(self):
+        return 'y'
+
+    def pos(self):
+        return ('x', 'y')
+
+    def button(self):
+        return None
+
+    def accept(self):
+        print('called event.accept')
+
+    def ignore(self):
+        print('called event.ignore')
 
 
 class MockSignal:
@@ -25,7 +81,7 @@ class MockAction:
     triggered = MockSignal()
 
     def __init__(self, *args):
-        self.parent = args[-1]
+        self.parent = args[-1] if args else None
         self.label = args[-2] if len(args) > 1 else ''
         self.icon = args[0] if len(args) > 2 else None
         print('called Action.__init__ with args', args)
@@ -36,8 +92,21 @@ class MockAction:
     def setCheckable(self, state):
         self.checkable = state
 
+    def setDisabled(self, state):
+        print(f'called Action.setDisabled with arg `{state}`')
+
+    def setEnabled(self, state):
+        print(f'called Action.setEnabled with arg `{state}`')
+
     def setChecked(self, state):
         self.checked = state
+
+    def isChecked(self):
+        print('called Action.isChecked')
+        return self.checked
+
+    def setText(self, data):
+        print(f'called Action.setText with arg `{data}`')
 
     def setShortcut(self, data):
         print(f'called Action.setShortcut with arg `{data}`')
@@ -48,6 +117,11 @@ class MockAction:
 
     def setStatusTip(self, data):
         self.statustip = data
+
+
+class MockShortcut:
+    def __init__(self, *args):
+        print('called Shortcut.__init__ with args', args)
 
 
 class MockApplication:
@@ -155,6 +229,10 @@ class MockMainWindow:
     def setWindowTitle(self, text):
         print(f'called MainWindow.setWindowTitle to `{text}`')
 
+    def windowTitle(self):
+        print(f'called MainWindow.windowTitle')
+        return 'text'
+
     def setWindowIcon(self, *args):
         print('called MainWindow.setWindowIcon')
 
@@ -214,6 +292,14 @@ class MockIcon:
         print('called Icon.fromTheme with args', args)
 
 
+class MockImage:
+    def __init__(self, *args):
+        print(f'called Image.__init__ with args', args)
+
+    def save(self, filename):
+        print(f'called image.save with arg {filename}')
+
+
 class MockMenuBar:
     def __init__(self):
         print('called MenuBar.__init__')
@@ -261,6 +347,20 @@ class MockMenu:
         newaction = MockAction('-----', None)
         self.actions.append(newaction)
         return newaction
+
+    def exec_(self, *args, **kwargs):
+        print('called Menu.exec_ with args', args, kwargs)
+
+    def exec(self, *args, **kwargs):
+        print('called Menu.exec with args', args, kwargs)
+
+
+class MockToolBar:
+    def __init__(self):
+        print('called ToolBar.__init__ ')
+
+    def setEnabled(self, value):
+        print(f'called ToolBar.setEnabled with arg {value}')
 
 
 class MockSplitter:
@@ -362,6 +462,9 @@ class MockTreeWidget:
     def hideColumn(self, *args):
         print('called Tree.hideColumn')
 
+    def resizeColumnToContents(self, colno):
+        print(f'called Tree.resizeColumnToContents with arg {colno}')
+
     def header(self):
         print('called Tree.header')
         return MockHeader()
@@ -438,6 +541,20 @@ class MockTreeWidget:
     def clear(self):
         print('called Tree.clear')
 
+    def collapseItem(self, item):
+        print(f'called Tree.collapseItem with arg {item}')
+
+    def expandItem(self, item):
+        print(f'called Tree.expandItem with arg {item}')
+
+    def mapToGlobal(self, arg):
+        print('called Tree.mapToGlobal with arg', arg)
+        return 'mapped-to-global'
+
+    def visualItemRect(self, arg):
+        print('called Tree.visualItemRect with arg', arg)
+        return types.SimpleNamespace(bottomRight=lambda *x: 'bottom-right')
+
 
 class MockTreeItem:
     def __init__(self, *args):   # text='', data=''):
@@ -449,6 +566,7 @@ class MockTreeItem:
         else:
             self._text = []
         self.subitems = []
+        self._parent = 'parent'
 
     def setText(self, col, text):
         print(f'called TreeItem.setText with arg `{text}` for col {col}')
@@ -474,20 +592,23 @@ class MockTreeItem:
 
     def parent(self):
         print('called TreeItem.parent')
-        return 'parent'
+        return self._parent
 
     def addChild(self, item):
         print('called TreeItem.addChild')
         self.subitems.append(item)
+        with contextlib.suppress(AttributeError):
+            item._parent = self
 
     def insertChild(self, index, item):
-        print('called TreeItem.insertChild')
+        print(f'called TreeItem.insertChild at pos {index}')
         self.subitems.insert(index, item)
 
     def childCount(self):
         return len(self.subitems)
 
     def child(self, num):
+        print(f'called TreeItem.child with arg {num}')
         return self.subitems[num]
 
     def indexOfChild(self, item):
@@ -506,6 +627,10 @@ class MockTreeItem:
     def setExpanded(self, value):
         print(f"called TreeItem.setExpanded with arg `{value}`")
 
+    def isExpanded(self):
+        print(f"called TreeItem.isExpanded")
+        return False
+
     def font(self, *args):
         return MockFont()
 
@@ -523,20 +648,50 @@ class MockTreeItem:
 
 
 class MockFont:
-    def __init__(self):
+    def __init__(self, *args):
         print('called Font.__init__')
 
     def setBold(self, value):
         print(f'called Font.setBold with arg `{value}`')
 
     def setFamily(self, *args):
-        print('called Editor.setFamily')
+        print('called Font.setFamily')
+
+    def family(self, *args):
+        print('called Font.family')
+        return 'fontfamily'
 
     def setFixedPitch(self, *args):
-        print('called Editor.setFixedPitch')
+        print('called Font.setFixedPitch')
 
     def setPointSize(self, *args):
-        print('called Editor.setPointSize')
+        print('called Font.setPointSize')
+
+    def pointSize(self, *args):
+        print('called Font.pointSize')
+        return 'fontsize'
+
+
+class MockFontInfo:
+    def __init__(self, arg):
+        print(f'called FontInfo.__init__ with arg {arg}')
+
+    def family(self):
+        print(f'called Font.family')
+        return 'family name'
+
+
+class MockFontDialog:
+    def __init__(self):
+        print('called FontDialog.__init__')
+
+    def getFont(default_font, parent):
+        print('called FontDialog.getFont with args', parent)
+        return None, False
+
+    def getFont2(default_font, parent):
+        print('called FontDialog.getFont with args', parent)
+        return MockFont(), True
 
 
 class MockEditorWidget:
@@ -545,6 +700,11 @@ class MockEditorWidget:
     WrapWord = 1
     SloppyBraceMatch = 2
     PlainFoldStyle = 3
+    defaultfamily = 'font family'
+    defaultsize = '12pt'
+    currentCharFormatChanged = MockSignal()
+    cursorPositionChanged = MockSignal()
+    textChanged = MockSignal()
 
     def __init__(self, *args):
         if args:
@@ -556,6 +716,9 @@ class MockEditorWidget:
         else:
             print('called Editor.__init__')
         self._text = args[0] if args else ''
+
+    def resize(self, *args):
+        print('called Editor.resize with args', args)
 
     def setMaximumWidth(self, number):
         print(f'called Editor.setMaximumWidth with arg `{number}`')
@@ -569,47 +732,69 @@ class MockEditorWidget:
     def setMinimumHeight(self, number):
         print(f'called Editor.setMinimumHeight with arg `{number}`')
 
-    def setWrapMode(self, *args):
-        print('called Editor.setWrapMode')
+    def setWrapMode(self, value):
+        print(f'called Editor.setWrapMode with arg `{value}`')
 
-    def setBraceMatching(self, *args):
-        print('called Editor.setBraceMatching')
+    def setBraceMatching(self, value):
+        print(f'called Editor.setBraceMatching with arg `{value}`')
 
-    def setAutoIndent(self, *args):
-        print('called Editor.setAutoIndent')
+    def setAutoFormatting(self, value):
+        print(f'called Editor.setAutoFormatting with arg `{value}`')
 
-    def setFolding(self, *args):
-        print('called Editor.setFolding')
+    def setAutoIndent(self, value):
+        print(f'called Editor.setAutoIndent with arg `{value}`')
+
+    def setFolding(self, value):
+        print(f'called Editor.setFolding with arg `{value}`')
 
     def setReadOnly(self, value):
-        print(f'called Editor.setReadOnly with value `{value}`')
+        print(f'called Editor.setReadOnly with arg `{value}`')
 
     def setFont(self, data):
-        print('called Editor.setFont')
+        print(f'called Editor.setFont')  # with arg `{data}`')
+
+    def setFontWeight(self, arg):
+        print(f'called Editor.setFontWeight with arg {arg}')
+
+    def setFontItalic(self, arg):
+        print(f'called Editor.setFontItalic with arg {arg}')
+
+    def setFontUnderline(self, arg):
+        print(f'called Editor.setFontUnderline with arg {arg}')
+
+    def setFontFamily(self, arg):
+        print(f"called Editor.setFontFamily with arg '{arg}'")
+
+    def setFontPointSize(self, arg):
+        print(f"called Editor.setFontPointSize with arg '{arg}'")
+
+    def currentFont(self):
+        print(f'called Editor.currentFont')
+        return MockFont()
 
     def setCurrentFont(self, data):
-        print('called Editor.setCurrentFont')
+        print(f'called Editor.setCurrentFont')  # with arg `{data}`')
 
     def setMarginsFont(self, data):
-        print('called Editor.setMarginsFont')
+        print(f'called Editor.setMarginsFont')  # with arg `{data}`')
 
     def setMarginWidth(self, *args):
-        print('called Editor.setMarginWidth')
+        print('called Editor.setMarginWidth with args', args)
 
     def setMarginLineNumbers(self, *args):
-        print('called Editor.setMarginLineNumbers')
+        print('called Editor.setMarginLineNumbers with args', args)
 
-    def setMarginsBackgroundColor(self, *args):
-        print('called Editor.setMarginsBackgroundColor')
+    def setMarginsBackgroundColor(self, arg):
+        print(f'called Editor.setMarginsBackgroundColor with arg {arg}')
 
-    def setCaretLineVisible(self, *args):
-        print('called Editor.setCaretLineVisible')
+    def setCaretLineVisible(self, value):
+        print(f'called Editor.setCaretLineVisible with arg `{value}`')
 
-    def setCaretLineBackgroundColor(self, *args):
-        print('called Editor.setCaretLineBackgroundColor')
+    def setCaretLineBackgroundColor(self, value):
+        print(f'called Editor.setCaretLineBackgroundColor with arg {value}')
 
     def setLexer(self, *args):
-        print('called Editor.setLexer')
+        print('called Editor.setLexer')  # with args', args)
 
     def clear(self, *args):
         print('called Editor.clear')
@@ -620,18 +805,86 @@ class MockEditorWidget:
     def isModified(self, *args):
         return 'x'
 
+    def setAcceptRichText(self, value):
+        print(f'called Editor.setAcceptRichText with arg `{value}`')
+
     def setText(self, text):
         print(f'called Editor.setText with arg `{text}`')
 
-    def text(self, *args):
+    def setHtml(self, text):
+        print(f'called Editor.setHtml with arg `{text}`')
+
+    def toHtml(self):
+        print(f'called Editor.toHtml')
+        return self._text or 'editor text'
+
+    def text(self):
         return 'editor text'
 
-    def toPlainText(self, *args):
+    def toPlainText(self):
         print('called Editor.toPlainText')
         return self._text or 'editor text'
 
     def setFocus(self, *args):
         print('called Editor.setFocus')
+
+    def setTabChangesFocus(self, value):
+        print(f'called Editor.setTabChangesFocus with arg {value}')
+
+    def setTabStopWidth(self, value):
+        print(f'called Editor.setTabStopWidth with arg {value}')
+
+    def insertFromMimeData(self, *args):
+        print("called Editor.insertFromMimeData with args", args)
+
+    def canInsertFromMimeData(self, data):
+        print(f"called Editor.canInsertFromMimeData with arg '{data}'")
+        return False
+
+    def charformat_changed(self, arg):
+        print(f'called Editor.charformat_changed')  #  with arg {arg}')
+
+    def moveCursor(self, *args):
+        print('called Editor.moveCursor with args', args)
+
+class MockTextDocument:
+    ImageResource = 2
+    def __init__(self, *args):
+        print('called TextDocument.__init__ with args', args)
+
+    def addResource(self, *args):
+        if args[0] == self.ImageResource:
+            print("called TextDocument.addResource with args"
+                  f" ({args[0]}, {type(args[1])}, {type(args[2])})")
+
+    def setModified(self, value):
+        print(f'called textDocument.setModified with arg {value}')
+
+    def isModified(self):
+        print('called textDocument.isModified')
+        return 'modified'
+
+
+class MockTextCharFormat:
+    def __init__(self, *args):
+        print('called TextCharFormat.__init__ with args', args)
+    def font(self):
+        print(f'called TextCharFormat.font')
+        return 'a font'
+    def setFont(self, arg):
+        print(f'called TextCharFormat.setFont')  # with arg {arg}')
+    def setFontFamily(self, arg):
+        print(f'called TextCharFormat.setFontFamily with arg {arg}')
+    def setFontWeight(self, arg):
+        print(f'called TextCharFormat.setFontWeight with arg {arg}')
+    def setFontPointSize(self, arg):
+        print(f'called TextCharFormat.setFontPointSize with arg {arg}')
+    def setFontItalic(self, arg):
+        print(f'called TextCharFormat.setFontItalic with arg {arg}')
+    def setFontUnderline(self, arg):
+        print(f'called TextCharFormat.setFontUnderline with arg {arg}')
+    def setFontStrikeOut(self, arg):
+        print(f'called TextCharFormat.setFontStrikeOut with arg {arg}')
 
 
 class MockSysTrayIcon:
@@ -769,6 +1022,9 @@ class MockVBoxLayout:
         print(f'called VBox.removeWidget with arg of type {type(args[0])}')
         self._count -= 1
 
+    def update(self):
+        print('called VBox.update')
+
 
 class MockHBoxLayout:
     def __init__(self, *args):
@@ -802,6 +1058,9 @@ class MockHBoxLayout:
 
     def itemAt(self, num):
         pass
+
+    def update(self):
+        print('called HBox.update')
 
 
 class MockGridLayout:
@@ -872,6 +1131,10 @@ class MockCheckBox:
         print(f'called CheckBox.setChecked with arg {value}')
         self.checked = value
 
+    def setCheckable(self, state):
+        print(f'called CheckBox.setCheckable with arg {state}')
+        self.checkable = state
+
     def toggle(self):
         print(f'called CheckBox.toggle')
         self.checked = not self.checked
@@ -882,6 +1145,9 @@ class MockCheckBox:
 
     def text(self):
         return self.textvalue
+
+    def setFocus(self, *args):
+        print('called CheckBox.setFocus')
 
 
 class MockComboBox:
@@ -959,6 +1225,13 @@ class MockComboBox:
     def close(self):
         print('called ComboBox.close')
 
+    def setFocus(self):
+        print('called ComboBox.setFocus')
+
+    def findText(self, *args):
+        print('called ComboBox.findText with args', args)
+        return 1
+
 
 class MockPushButton:
     clicked = MockSignal()
@@ -966,12 +1239,18 @@ class MockPushButton:
     def __init__(self, *args, **kwargs):
         print('called PushButton.__init__ with args', args, kwargs)
         self._text = args[0] if args else ''
+        self._enabled = False
 
     def setMaximumWidth(self, number):
         print(f'called PushButton.setMaximumWidth with arg `{number}`')
 
     def setEnabled(self, value):
         print(f'called PushButton.setEnabled with arg `{value}`')
+        self._enabled = value
+
+    def isEnabled(self):
+        # print(f'called PushButton.isEnabled')
+        return self._enabled
 
     def setDefault(self, value):
         print(f'called PushButton.setDefault with arg `{value}`')
@@ -1027,6 +1306,8 @@ class MockRadioButton:
 
 
 class MockLineEdit:
+    textChanged = MockSignal()
+
     def __init__(self, *args):
         print('called LineEdit.__init__')
         for arg in args:
@@ -1125,9 +1406,12 @@ def show_critical(parent, caption, message, *args):
     print(f'called MessageBox.critical with args `{parent}` `{caption}` `{message}`')
 
 
-def ask_question(parent, caption, message, buttons, default):
-    print('called MessageBox.question with args'
-          f' `{parent}` `{caption}` `{message}` `{buttons}` `{default}`')
+def ask_question(parent, caption, message, buttons, default=None):
+    if default:
+        print('called MessageBox.question with args'
+              f' `{parent}` `{caption}` `{message}` `{buttons}` `{default}`')
+    else:
+        print(f'called MessageBox.question with args `{parent}` `{caption}` `{message}` `{buttons}`')
     return MockMessageBox.No
 
 
@@ -1364,4 +1648,37 @@ class MockWebEngineView:
         print('called WebEngineView.__init__()')
 
     def setHtml(self, *args):
-        print('called WebEngineView.setHtml() with args', args)
+        p_rint('called WebEngineView.setHtml() with args', args)
+
+
+class MockUndoStack:
+    cleanChanged = MockSignal()
+    indexChanged = MockSignal()
+
+    def __init__(self, *args):
+        print("called UndoStack.__init__ with args", args)
+        self._undolimit = MAXUNDO
+    def undoLimit(self):
+        print("called UndoRedoStack.undoLimit")
+        return self._undolimit
+    def setUndoLimit(self, count):
+        print(f"called UndoRedoStack.setUndoLimit with arg {count}")
+        self._undolimit = count
+    def clear(self):
+        print("called UndoRedoStack.clear")
+    def push(self, arg):
+        print(f"called UndoRedoStack.push")
+    def undo(self):
+        print(f"called UndoRedoStack.undo")
+    def redo(self):
+        print(f"called UndoRedoStack.redo")
+
+
+class MockUndoCommand:
+    def __init__(self, *args, **kwargs):
+        print("called UndoCommand.__init__ with args", args, kwargs)
+
+
+class MockUrl:
+    def __init__(self, *args):
+        print('called Url.__init__ with args', args)
