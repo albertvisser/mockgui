@@ -84,6 +84,8 @@ class MockAction:
         self.parent = args[-1] if args else None
         self.label = args[-2] if len(args) > 1 else ''
         self.icon = args[0] if len(args) > 2 else None
+        if self.icon:
+            args = ('item of type Icon',) + args[1:]
         print('called Action.__init__ with args', args)
         self.shortcuts = []
         self.checkable = self.checked = False
@@ -99,6 +101,7 @@ class MockAction:
         print(f'called Action.setEnabled with arg `{state}`')
 
     def setChecked(self, state):
+        print(f'called Action.setChecked with arg `{state}`')
         self.checked = state
 
     def isChecked(self):
@@ -347,6 +350,16 @@ class MockMenu:
         newaction = MockAction('-----', None)
         self.actions.append(newaction)
         return newaction
+
+    def addMenu(self, *args):
+        print('called Menu.addMenu with args', args)
+        return MockMenu()
+
+    def setTitle(self, text):
+        print(f"called Menu.setTitle with arg '{text}'")
+
+    def setStatusTip(self, text):
+        print(f"called Menu.setStatusTip with arg '{text}'")
 
     def exec_(self, *args, **kwargs):
         print('called Menu.exec_ with args', args, kwargs)
