@@ -860,6 +860,7 @@ class MockEditorWidget:
     def moveCursor(self, *args):
         print('called Editor.moveCursor with args', args)
 
+
 class MockTextDocument:
     ImageResource = 2
     def __init__(self, *args):
@@ -1102,6 +1103,13 @@ class MockGridLayout:
 
     def insertStretch(self, *args):
         print('called Grid.insertStretch')
+
+    def count(self):
+        print('called Grid.count')
+        return 3
+
+    def removeItem(self, *args):
+        print('called Grid.removeItem with args', args)
 
 
 class MockLabel:
@@ -1599,6 +1607,10 @@ class MockTable:
         self._rows = 0
         self._header = MockHeader()
         self._vhead = MockHeader()
+        self._items = {}
+
+    def setColumnWidth(self, *args):
+        print(f"called Table.setColumnWidth with args", args)
 
     def setColumnCount(self, count):
         print(f"called Table.setColumnCount with arg '{count}'")
@@ -1612,8 +1624,8 @@ class MockTable:
         print(f"called Table.rowCount")
         return self._rows
 
-    def ColumnCount(self):
-        print(f"called Table.ColumnCount")
+    def columnCount(self):
+        print(f"called Table.columnCount")
         return self._cols
 
     def setHorizontalHeaderLabels(self, headerlist):
@@ -1634,6 +1646,11 @@ class MockTable:
 
     def insertRow(self, rownum):
         print(f"called Table.insertRow with arg '{rownum}'")
+        self._rows += 1
+
+    def insertColumn(self, colnum):
+        print(f"called Table.insertColumn with arg '{colnum}'")
+        self._cols += 1
 
     def currentRow(self):
         print("called Table.currentRow")
@@ -1641,9 +1658,24 @@ class MockTable:
 
     def removeRow(self, rownum):
         print(f"called Table.removeRow with arg '{rownum}'")
+        self._rows -= 1
+
+    def removeColumn(self, colnum):
+        print(f"called Table.removeColumn with arg '{colnum}'")
+        self._cols -= 1
 
     def setItem(self, x, y, item):
-        print(f"called Table.setItem with args ({x}, {y}, item of {type(item)}")
+        print(f"called Table.setItem with args ({x}, {y}, item of {type(item)})")
+        self._items[(x, y)] = item
+
+    def item(self, x, y):
+        print(f"called Table.item with args ({x}, {y})")
+        with contextlib.suppress(KeyError):
+            return self._items[(x, y)]
+        return None
+
+    def clear(self):
+        print(f"called Table.clear")
 
 
 class MockFontMetrics:
