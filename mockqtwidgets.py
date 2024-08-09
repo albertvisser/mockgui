@@ -547,6 +547,14 @@ class MockTreeWidget:
         print(f'called Tree.itemBelow with arg {arg}')
         return 'x'
 
+    def itemAbove(self, arg):
+        print(f'called Tree.itemAbove with arg {arg}')
+        return 'x'
+
+    def itemAt(self, line, col):
+        print(f'called Tree.itemAt with args ({line}, {col})')
+        return f'item at ({line}, {col})'
+
     def count(self):
         print('called Tree.count')
         return 0
@@ -939,6 +947,9 @@ class MockDialog:
     def exec(self):  # Qt6
         print('called Dialog.exec')
 
+    def show(self):
+        print('called Dialog.show')
+
     def setWindowTitle(self, *args):
         print('called Dialog.setWindowTitle with args', args)
 
@@ -989,7 +1000,7 @@ def get_open2(parent, *args, **kwargs):
 
 
 def get_save(parent, *args, **kwargs):
-    print('called FileDialog.getSaveFilename with args', parent, args, kwargs)
+    print('called FileDialog.getSaveFileName with args', parent, args, kwargs)
     return '', False  # canceled
 
 
@@ -1145,6 +1156,7 @@ class MockLabel:
 
 class MockCheckBox:
     clicked = MockSignal()
+    toggled = MockSignal()
 
     def __init__(self, *args):
         print('called CheckBox.__init__')
@@ -1433,10 +1445,10 @@ def show_critical(parent, caption, message, *args):
     print(f'called MessageBox.critical with args `{parent}` `{caption}` `{message}`')
 
 
-def ask_question(parent, caption, message, buttons, default=None):
-    if default:
+def ask_question(parent, caption, message, buttons, defaultButton=None):
+    if defaultButton:
         print('called MessageBox.question with args'
-              f' `{parent}` `{caption}` `{message}` `{buttons}` `{default}`')
+              f' `{parent}` `{caption}` `{message}` `{buttons}` `{defaultButton}`')
     else:
         print(f'called MessageBox.question with args `{parent}` `{caption}` `{message}` `{buttons}`')
     return MockMessageBox.No
@@ -1708,7 +1720,10 @@ class MockUndoStack:
 
     def __init__(self, *args):
         print("called UndoStack.__init__ with args", args)
+        self._parent = args[0]
         self._undolimit = MAXUNDO
+    def parent(self):
+        return self._parent
     def undoLimit(self):
         print("called UndoRedoStack.undoLimit")
         return self._undolimit
