@@ -1122,6 +1122,9 @@ class MockGridLayout:
     def removeItem(self, *args):
         print('called Grid.removeItem with args', args)
 
+    def update(self):
+        print('called Grid.update')
+
 
 class MockLabel:
     def __init__(self, *args):
