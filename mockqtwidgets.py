@@ -719,8 +719,10 @@ class MockEditorWidget:
     "contains elements of TextEdit, RichTextEdit, Scintilla"
     # wordt in albums_gui.py aangeroepen met argumenten tekst en parent
     WrapWord = 1
-    SloppyBraceMatch = 2
-    PlainFoldStyle = 3
+    SloppyBraceMatch = 2  # Qt5
+    BraceMatch = types.SimpleNamespace(SloppyBraceMatch=2)  # Qt6
+    PlainFoldStyle = 3  # Qt5
+    FoldStyle = types.SimpleNamespace(PlainFoldStyle=3)  # Qt6
     defaultfamily = 'font family'
     defaultsize = '12pt'
     currentCharFormatChanged = MockSignal()
@@ -1155,6 +1157,9 @@ class MockLabel:
 
     def setPixmap(self, data):
         print('called Label.setPixmap')
+
+    def setOpenExternalLinks(self, target):
+        print(f"called Label.setOpenExternalLinks with arg '{target}'")
 
 
 class MockCheckBox:
@@ -1697,8 +1702,11 @@ class MockFontMetrics:
     def __init__(self, *args):
         print('called Fontmetrics.__init__()')
 
-    def width(self, *args):
+    def width(self, *args):  # Qt5
         print('called Editor.width()')
+
+    def horizontalAdvance(self, *args):  # Qt6
+        print('called Editor.horizontalAdvance()')
 
 
 class MockLexerDiff:
