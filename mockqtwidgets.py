@@ -198,6 +198,32 @@ class MockScrollArea:
         print(f'called ScrollArea.setWidgetResizable with arg `{arg}`')
 
 
+class MockStackedWidget:
+    def __init__(self, *args):
+        print('called StackedWidget.__init__')
+
+    def addWidget(self, arg):
+        print(f"called StackedWidget.addWidget with arg {arg}")
+
+    def insertWidget(self, *args):
+        print("called StackedWidget.insertWidget with args", args)
+
+    def removeWidget(self, arg):
+        print(f"called StackedWidget.removeWidget with arg {arg}")
+
+    def currentWidget(self):
+        print("called StackedWidget.currentWidget")
+        return 'current widget'
+
+    def setCurrentIndex(self, num):
+        print(f"called StackedWidget.setCurrentIndex with arg {num}")
+        return 'current widget'
+
+    def widget(self, num):
+        print("called StackedWidget.widget with arg {num}")
+        return 'widget'
+
+
 class MockScrolledWidget:
     def __init__(self, *args):
         print('called ScrolledWidget.__init__')
@@ -273,6 +299,8 @@ class MockFrame:
     def setLayout(self, arg):
         print(f'called Frame.setLayout with arg of type {type(arg)}')
 
+    def close(self):
+        print('called Frame.close')
 
 class MockPixmap:
     def __init__(self, *args):
@@ -449,6 +477,9 @@ class MockHeader:
     def setSectionResizeMode(self, col, mode):
         print(f'called Header.setSectionResizeMode for col {col} mode {mode}')
 
+    def setSectionsClickable(self, value):
+        print(f'called Header.setSectionsClickable with value {value}')
+
     def resizeSection(self, col, width):
         print(f'called Header.resizeSection for col {col} width {width}')
 
@@ -506,6 +537,10 @@ class MockTreeWidget:
     def topLevelItem(self, arg):
         print(f'called Tree.topLevelItem with arg `{arg}`')
         return 'Tree.topLevelItem'
+
+    def indexOfTopLevelItem(self, arg):
+        print(f'called Tree.indexOfTopLevelItem with arg `{arg}`')
+        return 'index'
 
     def takeTopLevelItem(self, arg):
         print(f'called Tree.takeTopLevelItem with arg `{arg}`')
@@ -575,6 +610,12 @@ class MockTreeWidget:
     def visualItemRect(self, arg):
         print('called Tree.visualItemRect with arg', arg)
         return types.SimpleNamespace(bottomRight=lambda *x: 'bottom-right')
+
+    def setAlternatingRowColors(self, arg):
+        print(f'called Tree.setAlternatingRowColors with arg {arg}')
+
+    def setSortingEnabled(self, arg):
+        print(f'called Tree.setSortingEnabled with arg {arg}')
 
 
 class MockTreeItem:
@@ -1199,7 +1240,7 @@ class MockCheckBox:
 
 class MockComboBox:
     currentIndexChanged = MockSignal()
-    editTextChanged = {str: MockSignal()}
+    editTextChanged = MockSignal()
     activated = MockSignal()
 
     def __init__(self, *args, **kwargs):
@@ -1212,6 +1253,9 @@ class MockComboBox:
 
     def setMinimumWidth(self, number):
         print(f'called ComboBox.setMinimumWidth with arg `{number}`')
+
+    def setEnabled(self, value):
+        print(f'called ComboBox.setEnabled with arg {value}')
 
     def clear(self):
         print('called ComboBox.clear')
@@ -1278,6 +1322,14 @@ class MockComboBox:
     def findText(self, *args):
         print('called ComboBox.findText with args', args)
         return 1
+
+    def setMinimumContentsLength(self, value):
+        print(f'called ComboBox.setMinimumContentsLength with arg {value}')
+
+
+class MockScrolledWidget:
+    def __init__(self, *args):
+        print('called ScrolledWidget.__init__')
 
 
 class MockPushButton:
@@ -1366,6 +1418,9 @@ class MockLineEdit:
 
     def setReadOnly(self, value):
         print(f'called LineEdit.setReadOnly with arg `{value}`')
+
+    def setEnabled(self, value):
+        print(f'called LineEdit.setEnabled with arg {value}')
 
     def setMaximumHeight(self, value):
         print(f'called LineEdit.setMaximumHeight with arg `{value}`')
