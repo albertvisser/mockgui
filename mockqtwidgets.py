@@ -171,6 +171,9 @@ class MockWidget:
     def resize(self, *args):
         print('called Widget.resize with args', args)
 
+    def close(self):
+        print('called Widget.close')
+
 
 class MockScrollBar:
     def __init__(self, *args):
@@ -194,8 +197,18 @@ class MockScrollArea:
     def setWidget(self, arg):
         print(f'called ScrollArea.setWidget with arg of type `{type(arg)}`')
 
+    def setAlignment(self, arg):
+        print(f'called ScrollArea.setAlignment with arg {arg}')
+
     def setWidgetResizable(self, arg):
         print(f'called ScrollArea.setWidgetResizable with arg `{arg}`')
+
+    def ensureVisible(self, *args):
+        print(f'called ScrollArea.ensureVisible with args', args)
+
+    def verticalScrollBar(self):
+        print('called ScrollArea.verticalScrollBar')
+        return 'vertical scrollbar'
 
 
 class MockStackedWidget:
@@ -285,10 +298,15 @@ class MockMainWindow:
 
 class MockFrame:
     HLine = '---'
-    Box = '[]'
+    # Box = '[]'
+    Box = 32
+    Raised = 6
 
     def __init__(self, parent=None):
         print('called Frame.__init__')
+
+    def setWindowTitle(self, arg):
+        print(f"called Frame.setWindowTitle wth arg '{arg}'")
 
     def setFrameShape(self, arg):
         print(f'called Frame.setFrameShape with arg `{arg}`')
@@ -301,6 +319,7 @@ class MockFrame:
 
     def close(self):
         print('called Frame.close')
+
 
 class MockPixmap:
     def __init__(self, *args):
@@ -980,7 +999,7 @@ class MockStatusBar:
 
 
 class MockDialog:
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent=None, *args, **kwargs):
         self.parent = parent
         print('called Dialog.__init__ with args', parent, args, kwargs)
 
@@ -989,6 +1008,9 @@ class MockDialog:
 
     def exec(self):  # Qt6
         print('called Dialog.exec')
+
+    def resize(self, *args):
+        print('called Dialog.resize with args', args)
 
     def show(self):
         print('called Dialog.show')
@@ -1096,6 +1118,14 @@ class MockVBoxLayout:
         print(f'called VBox.removeWidget with arg of type {type(args[0])}')
         self._count -= 1
 
+    def removeItem(self, *args):
+        print('called VBox.removeItem')
+        # self._count -= 1
+
+    def itemAt(self, rownum):
+        print(f'called VBox.itemAt with arg {rownum}')
+        return f'widget at {rownum}'
+
     def update(self):
         print('called VBox.update')
 
@@ -1105,9 +1135,12 @@ class MockHBoxLayout:
         print('called HBox.__init__')
         self._count = 0
 
-    def addWidget(self, *args):
+    def addWidget(self, *args, **kwargs):
         # print('called HBox.addWidget')
-        print(f'called HBox.addWidget with arg of type {type(args[0])}')
+        if kwargs:
+            print(f'called HBox.addWidget with arg of type {type(args[0])}, kwargs', kwargs)
+        else:
+            print(f'called HBox.addWidget with arg of type {type(args[0])}')
         self._count += 1
 
     def addLayout(self, *args):
@@ -1167,6 +1200,9 @@ class MockGridLayout:
 
     def update(self):
         print('called Grid.update')
+
+    def removeWidget(self, *args):
+        print(f'called Grid.removeWidget with arg of type {type(args[0])}')
 
 
 class MockLabel:
@@ -1236,6 +1272,12 @@ class MockCheckBox:
 
     def setFocus(self, *args):
         print('called CheckBox.setFocus')
+
+    def close(self):
+        print('called CheckBox.close')
+
+    def setFixedWidth(self, count):
+        print(f"called CheckBox.setFixedWidth with arg '{count}'")
 
 
 class MockComboBox:
@@ -1431,11 +1473,17 @@ class MockLineEdit:
     def setMaximumWidth(self, value):
         print(f'called LineEdit.setMaximumWidth with arg `{value}`')
 
+    def setFixedWidth(self, value):
+        print(f'called LineEdit.setFixedWidth with arg `{value}`')
+
     def setMinimumWidth(self, value):
         print(f'called LineEdit.setMinimumWidth with arg `{value}`')
 
     def clear(self):
         print('called LineEdit.clear')
+
+    def close(self):
+        print('called LineEdit.close')
 
     def setText(self, text):
         print(f'called LineEdit.setText with arg `{text}`')
@@ -1456,6 +1504,7 @@ class MockLineEdit:
 class MockButtonBox:
     Ok = 1
     Cancel = 2
+    ActionRole = 9
     accepted = MockSignal()
     rejected = MockSignal()
 
@@ -1566,15 +1615,22 @@ class MockMessageBox:
 class MockSpinBox:
     def __init__(self, *args):
         print('called SpinBox.__init__')
-        self._value = 0
+        value = args[0] if args else 0
+        self._value = value
     def setMinimum(self, count):
         print(f"called SpinBox.setMinimum with arg '{count}'")
+    def setMaximum(self, count):
+        print(f"called SpinBox.setMaximum with arg '{count}'")
+    def setFixedWidth(self, count):
+        print(f"called SpinBox.setFixedWidth with arg '{count}'")
     def setValue(self, arg):
         print(f"called SpinBox.setValue with arg '{arg}'")
         self._value = arg
     def value(self):
         print(f"called SpinBox.value")
         return self._value
+    def close(self):
+        print(f"called SpinBox.close")
 
 
 class MockListBox:
@@ -1671,13 +1727,34 @@ class MockTableItem:
     def __init__(self, arg='xy'):
         print('called TableItem.__init__ with arg', arg)
         self._text = arg
+    def setText(self, value):
+        print('called TableItem.settext with arg', value)
+        self._text = value
     def text(self):
         return self._text
 
 
+class MockTableSelectionRange:
+    def __init__(self, *args):
+        print('called TableRange.__init__ with args', args)
+        self._fromrow, self._fromcol, self._maxrow, self._maxcol = (0, 0, 0, 0)
+        if args:
+            self._fromrow, self._fromcol, self._maxrow, self._maxcol = args
+        self._rows = self._maxrow - self._fromrow + 1
+        self._cols = self._maxcol - self._fromcol + 1
+
+    def topRow(self):
+        print(f"called TableRange.topRow")
+        return self._fromrow
+
+    def rowCount(self):
+        print(f"called TableRange.rowCount")
+        return self._rows
+
+
 class MockTable:
-    def __init__(self, arg):
-        print('called Table.__init__ with arg', arg)
+    def __init__(self, *args):
+        print('called Table.__init__ with args', args)
         self._cols = 0
         self._rows = 0
         self._header = MockHeader()
@@ -1751,6 +1828,13 @@ class MockTable:
 
     def clear(self):
         print(f"called Table.clear")
+
+    def scrollToBottom(self):
+        print(f"called Table.scrollToBottom")
+
+    def selectedRanges(self):
+        print('called Table.selectedRanges')
+        return []
 
 
 class MockFontMetrics:
