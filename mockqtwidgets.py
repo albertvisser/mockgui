@@ -320,6 +320,9 @@ class MockFrame:
     def close(self):
         print('called Frame.close')
 
+    def setMaximumHeight(self, number):
+        print(f'called Frame.setMaximumHeight with arg `{number}`')
+
 
 class MockPixmap:
     def __init__(self, *args):
@@ -1242,6 +1245,7 @@ class MockLabel:
 class MockCheckBox:
     clicked = MockSignal()
     toggled = MockSignal()
+    stateChanged = MockSignal()
 
     def __init__(self, *args):
         print('called CheckBox.__init__')
