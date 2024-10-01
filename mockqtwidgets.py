@@ -177,7 +177,7 @@ class MockWidget:
 
 class MockScrollBar:
     def __init__(self, *args):
-        print('called Scrollbar.__init__')
+        print('called ScrollBar.__init__')
 
     def maximum(self):
         print('called Scrollbar.maximum')
@@ -301,6 +301,8 @@ class MockFrame:
     # Box = '[]'
     Box = 32
     Raised = 6
+    Shape = types.SimpleNamespace(HLine='---', Box=32)  # PyQt6
+    Shadow = types.SimpleNamespace(Raised=6)  # PyQt6
 
     def __init__(self, parent=None):
         print('called Frame.__init__')
@@ -488,6 +490,7 @@ class MockTabWidget:
 
 class MockHeader:
     Stretch = 'stretch'
+    ResizeMode = types.SimpleNamespace(Stretch='stretch')  # PyQt6
 
     def __init__(self, *args):
         print('called Header.__init__')
@@ -511,6 +514,7 @@ class MockHeader:
 
 class MockTreeWidget:
     SingleSelection = 1
+    SelectionMode = types.SimpleNamespace(SingleSelection=1)  # Qt6
     itemSelectionChanged = MockSignal()
     itemEntered = MockSignal()
     itemDoubleClicked = MockSignal()
@@ -936,6 +940,7 @@ class MockEditorWidget:
 
 class MockTextDocument:
     ImageResource = 2
+    ResourceType = types.SimpleNamespace(ImageResource=2)  # Qt6
     def __init__(self, *args):
         print('called TextDocument.__init__ with args', args)
 
@@ -1506,9 +1511,11 @@ class MockLineEdit:
 
 
 class MockButtonBox:
-    Ok = 1
-    Cancel = 2
-    ActionRole = 9
+    Ok = 1  # Qt5
+    Cancel = 2  # Qt5
+    ActionRole = 9  # Qt5
+    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2)  # Qt6
+    ButtonRole = types.SimpleNamespace(ActionRole=9)  # Qt6
     accepted = MockSignal()
     rejected = MockSignal()
 
@@ -1575,8 +1582,11 @@ class MockMessageBox:
     Cancel = 2
     Yes = 4
     No = 8
+    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Yes=4, No=8)  # Qt6
     AcceptRole = 1
+    ButtonRole = types.SimpleNamespace(AcceptRole=1)  # Qt6
     Information = 2
+    Icon = types.SimpleNamespace(Information=2)  # Qt6
     information = staticmethod(show_information)
     critical = staticmethod(show_critical)
     question = staticmethod(ask_question)
