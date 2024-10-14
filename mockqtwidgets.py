@@ -110,6 +110,11 @@ class MockAction:
 
     def setText(self, data):
         print(f'called Action.setText with arg `{data}`')
+        self.label = data
+
+    def text(self):
+        print('called Action.text')
+        return self.label
 
     def setShortcut(self, data):
         print(f'called Action.setShortcut with arg `{data}`')
@@ -269,10 +274,10 @@ class MockMainWindow:
         print('called MainWindow.close')
 
     def setWindowTitle(self, text):
-        print(f'called MainWindow.setWindowTitle to `{text}`')
+        print(f'called MainWindow.setWindowTitle with arg `{text}`')
 
     def windowTitle(self):
-        print(f'called MainWindow.windowTitle')
+        print('called MainWindow.windowTitle')
         return 'text'
 
     def setWindowIcon(self, *args):
@@ -294,6 +299,9 @@ class MockMainWindow:
 
     def addAction(self, arg):
         print('called MainWindow.addAction')
+
+    def keyReleaseEvent(self, arg):
+        print('called MainWindow.keyReleaseEvent')
 
 
 class MockFrame:
@@ -405,10 +413,17 @@ class MockMenu:
 
     def addMenu(self, *args):
         print('called Menu.addMenu with args', args)
-        return MockMenu()
+        if not args or isinstance(args[0], str):
+            return MockMenu()
+        return MockAction()
 
     def setTitle(self, text):
         print(f"called Menu.setTitle with arg '{text}'")
+        self.menutext = text
+
+    def title(self):
+        print(f"called Menu.title")
+        return self.menutext
 
     def setStatusTip(self, text):
         print(f"called Menu.setStatusTip with arg '{text}'")
@@ -491,6 +506,7 @@ class MockTabWidget:
 class MockHeader:
     Stretch = 'stretch'
     ResizeMode = types.SimpleNamespace(Stretch='stretch')  # PyQt6
+    sectionClicked = MockSignal()
 
     def __init__(self, *args):
         print('called Header.__init__')
@@ -522,6 +538,9 @@ class MockTreeWidget:
 
     def __init__(self, *args):
         print('called Tree.__init__')
+
+    def resize(self, *args):
+        print('called Tree.resize with args', args)
 
     def setColumnCount(self, num):
         print(f'called Tree.setColumnCount with arg `{num}`')
@@ -643,6 +662,18 @@ class MockTreeWidget:
     def setSortingEnabled(self, arg):
         print(f'called Tree.setSortingEnabled with arg {arg}')
 
+    def setDragEnabled(self, arg):
+        print(f'called Tree.setDragEnabled with arg {arg}')
+
+    def setDragDropMode(self, arg):
+        print(f'called Tree.setDragDropMode with arg {arg}')
+
+    def setAcceptDrops(self, arg):
+        print(f'called Tree.setAcceptDrops with arg {arg}')
+
+    def setDropIndicatorShown(self, arg):
+        print(f'called Tree.setDropIndicatorShown with arg {arg}')
+
 
 class MockTreeItem:
     def __init__(self, *args):   # text='', data=''):
@@ -700,6 +731,7 @@ class MockTreeItem:
         return self.subitems[num]
 
     def indexOfChild(self, item):
+        print('called TreeItem.indexOfChild')
         return self.subitems.index(item)
 
     def takeChild(self, itemseq):
@@ -785,7 +817,8 @@ class MockFontDialog:
 class MockEditorWidget:
     "contains elements of TextEdit, RichTextEdit, Scintilla"
     # wordt in albums_gui.py aangeroepen met argumenten tekst en parent
-    WrapWord = 1
+    WrapWord = 1  # Qt5
+    WrapMode = types.SimpleNamespace(WrapWord=1)  # Qt6
     SloppyBraceMatch = 2  # Qt5
     BraceMatch = types.SimpleNamespace(SloppyBraceMatch=2)  # Qt6
     PlainFoldStyle = 3  # Qt5
@@ -894,6 +927,9 @@ class MockEditorWidget:
 
     def isModified(self, *args):
         return 'x'
+
+    def setPlainText(self, value):
+        print(f'called Editor.setPlainText with arg `{value}`')
 
     def setAcceptRichText(self, value):
         print(f'called Editor.setAcceptRichText with arg `{value}`')
@@ -1246,6 +1282,9 @@ class MockLabel:
     def setOpenExternalLinks(self, target):
         print(f"called Label.setOpenExternalLinks with arg '{target}'")
 
+    def setWordWrap(self, value):
+       print(f'called Label.setWordWrap with arg {value}')
+
 
 class MockCheckBox:
     clicked = MockSignal()
@@ -1276,6 +1315,10 @@ class MockCheckBox:
         print('called CheckBox.isChecked')
         return self.checked
 
+    def checkState(self):
+        print('called CheckBox.checkState')
+        return self.checked
+
     def text(self):
         return self.textvalue
 
@@ -1291,6 +1334,7 @@ class MockCheckBox:
 
 class MockComboBox:
     currentIndexChanged = MockSignal()
+    currentTextChanged = MockSignal()
     editTextChanged = MockSignal()
     activated = MockSignal()
 
@@ -1398,6 +1442,10 @@ class MockPushButton:
         print(f'called PushButton.setEnabled with arg `{value}`')
         self._enabled = value
 
+    def setDisabled(self, value):
+        print(f'called PushButton.setDisabled with arg `{value}`')
+        self._enabled = not value
+
     def isEnabled(self):
         # print(f'called PushButton.isEnabled')
         return self._enabled
@@ -1472,6 +1520,9 @@ class MockLineEdit:
 
     def setEnabled(self, value):
         print(f'called LineEdit.setEnabled with arg {value}')
+
+    def setDisabled(self, value):
+        print(f'called LineEdit.setDisabled with arg {value}')
 
     def setMaximumHeight(self, value):
         print(f'called LineEdit.setMaximumHeight with arg `{value}`')
@@ -1627,6 +1678,7 @@ class MockMessageBox:
 
 
 class MockSpinBox:
+    valueChanged = MockSignal()
     def __init__(self, *args):
         print('called SpinBox.__init__')
         value = args[0] if args else 0
@@ -1746,6 +1798,11 @@ class MockTableItem:
         self._text = value
     def text(self):
         return self._text
+    def setFlags(self, flags):
+        print(f'called TableItem.setFlags with arg {flags}')
+    def flags(self):
+        print('called TableItem.flags')
+        return 8
 
 
 class MockTableSelectionRange:
@@ -1846,6 +1903,16 @@ class MockTable:
     def scrollToBottom(self):
         print(f"called Table.scrollToBottom")
 
+    def setFocus(self):
+        print(f"called Table.setFocus")
+
+    def setCurrentCell(self, *args):
+        print(f"called Table.setCurrentCell with args", args)
+
+    def findItems(self, *args):
+        print('called Table.findItems with args', args)
+        return []
+
     def selectedRanges(self):
         print('called Table.selectedRanges')
         return []
@@ -1862,7 +1929,7 @@ class MockFontMetrics:
         print('called Editor.horizontalAdvance()')
 
 
-class MockLexerDiff:
+class MockLexer:
     def __init__(self, *args):
         print('called Lexer.__init__()')
 
@@ -1874,8 +1941,8 @@ class MockWebEngineView:
     def __init__(self, *args):
         print('called WebEngineView.__init__()')
 
-    def setHtml(self, *args):
-        p_rint('called WebEngineView.setHtml() with args', args)
+    def setHtml(self, *args, **kwargs):
+        print('called WebEngineView.setHtml() with args', args, kwargs)
 
 
 class MockUndoStack:
@@ -1912,3 +1979,13 @@ class MockUndoCommand:
 class MockUrl:
     def __init__(self, *args):
         print('called Url.__init__ with args', args)
+
+    @staticmethod
+    def fromLocalFile(arg):
+        print(f"called Url.fromLocalFile with arg '{arg}'")
+        return arg
+
+
+class MockPoint:
+    def __init__(self, *args):
+        print('called Point.__init__ with args', args)
