@@ -16,19 +16,13 @@ class MockCursor:
         print(f'called Cursor.insertImage with arg {arg}')
 
 
-class MockTextCursor:
-    def __init__(self):
-        print('called TextCursor.__init__')
-
-    def hasSelection(self):
-        print('called TextCursor.hasSelection')
-        return False
-
-    def select(self, arg):
-        print(f'called TextCursor.select with arg {arg}')
-
-    def mergeCharFormat(self, arg):
-        print(f'called TextCursor.mergeCharFormat with arg {arg}')
+class MockBrush:
+    def __init__(self, *args):
+        self._col = args[0] if args[0] in ('fg', 'bg') else 'brush'
+    def color(self):
+        return f'{self._col} color'
+    def style(self):
+        return 'brush style'
 
 
 class MockColor:
@@ -44,6 +38,7 @@ class MockColor:
 #         print(f'called control.setVisible with args `{type(self)}`, `{value}`')
 class MockEvent:
     def __init__(self, **kwargs):
+        self._key = None
         if 'key' in kwargs:
             self._key = kwargs['key']
 
@@ -83,11 +78,11 @@ class MockAction:
     def __init__(self, *args):
         self.parent = args[-1] if args else None
         self.label = args[-2] if len(args) > 1 else ''
-        self.icon = args[0] if len(args) > 2 else None
-        if self.icon:
+        self._icon = args[0] if len(args) > 2 else None
+        if self._icon:
             args = ('item of type Icon',) + args[1:]
         print('called Action.__init__ with args', args)
-        self.shortcuts = []
+        self._shortcuts = []
         self.checkable = self.checked = False
         self.statustip = ''
 
@@ -116,12 +111,24 @@ class MockAction:
         print('called Action.text')
         return self.label
 
+    def setFont(self, data):
+        print(f'called Action.setFont')
+
+    def setIcon(self, data):
+        print(f'called Action.setIcon with arg `{data}`')
+        self._icon = data
+
     def setShortcut(self, data):
         print(f'called Action.setShortcut with arg `{data}`')
+        self._shortcuts = [data]
 
     def setShortcuts(self, data):
         print(f'called Action.setShortcuts with arg `{data}`')
-        self.shortcuts = data
+        self._shortcuts = data
+
+    def shortcuts(self):
+        print(f'called Action.shortcuts')
+        return self._shortcuts
 
     def setStatusTip(self, data):
         self.statustip = data
@@ -151,6 +158,9 @@ class MockApplication:
     def clipboard():
         print('called Application.clipboard')
         return MockClipBoard()
+
+    def setWindowIcon(self, *args):
+        print('called Application.setWindowIcon')
 
 
 class MockClipBoard:
@@ -267,8 +277,19 @@ class MockMainWindow:
     def resize(self, *args):
         print('called MainWindow.resize with args', args)
 
+    def width(self, *args):
+        print('called MainWindow.width with args', args)
+        return 'width'
+
+    def height(self, *args):
+        print('called MainWindow.height with args', args)
+        return 'height'
+
     def show(self):
         print('called MainWindow.show')
+
+    def hide(self):
+        print('called MainWindow.hide')
 
     def close(self):
         print('called MainWindow.close')
@@ -346,6 +367,9 @@ class MockPixmap:
         print(f'called Pixmap.scaled to `{x}`, `{y}`')
         return 'ok'
 
+    def fill(self, color):
+        print(f'called Pixmap.fill with arg {color}')
+
 
 class MockIcon:
     def __init__(self, arg):
@@ -384,13 +408,16 @@ class MockMenu:
         print('called Menu.__init__ with args', args)
         if args:
             self.menutext = args[0]
-        self.actions = []
+        self._actions = []
     # def addAction(self, text, func):
+
+    def actions(self):
+        return self._actions
 
     def addAction(self, *args):
         if len(args) == 1 and not isinstance(args[0], str):
             print('called Menu.addAction')
-            self.actions.append(args[0])
+            self._actions.append(args[0])
             return None
         # overloads: icon, text / text, callback, shortcut(s) / icon, text, callback, shortcut(s)
         # geen idee wat ik hiervan allemaal gebruik
@@ -402,13 +429,13 @@ class MockMenu:
             func = args[2] if len(args) > 2 else None
         print(f'called Menu.addAction with args `{text}` {func}')
         newaction = MockAction(text, func)
-        self.actions.append(newaction)
+        self._actions.append(newaction)
         return newaction
 
     def addSeparator(self):
         print('called Menu.addSeparator')
         newaction = MockAction('-----', None)
-        self.actions.append(newaction)
+        self._actions.append(newaction)
         return newaction
 
     def addMenu(self, *args):
@@ -425,8 +452,15 @@ class MockMenu:
         print(f"called Menu.title")
         return self.menutext
 
+    def removeAction(self, action):
+        print(f'called Menu.removeaction with arg {action}')
+        self._actions.remove(action)
+
     def setStatusTip(self, text):
         print(f"called Menu.setStatusTip with arg '{text}'")
+
+    def setDisabled(self, value):
+        print(f"called Menu.setDisabled with arg '{value}'")
 
     def exec_(self, *args, **kwargs):
         print('called Menu.exec_ with args', args, kwargs)
@@ -439,8 +473,17 @@ class MockToolBar:
     def __init__(self):
         print('called ToolBar.__init__ ')
 
+    def addAction(self, value):
+        print('called ToolBar.addAction')
+
+    def addWidget(self, value):
+        print(f'called ToolBar.addWidget with arg {value}')
+
     def setEnabled(self, value):
         print(f'called ToolBar.setEnabled with arg {value}')
+
+    def setIconSize(self, *args):
+        print(f'called ToolBar.setIconSize')
 
 
 class MockSplitter:
@@ -531,6 +574,8 @@ class MockHeader:
 class MockTreeWidget:
     SingleSelection = 1
     SelectionMode = types.SimpleNamespace(SingleSelection=1)  # Qt6
+    InternalMove = 4
+    DragDropMode = types.SimpleNamespace(InternalMove=4)  # Qt6
     itemSelectionChanged = MockSignal()
     itemEntered = MockSignal()
     itemDoubleClicked = MockSignal()
@@ -631,8 +676,13 @@ class MockTreeWidget:
         print(f'called Tree.itemAbove with arg {arg}')
         return 'x'
 
-    def itemAt(self, line, col):
-        print(f'called Tree.itemAt with args ({line}, {col})')
+    def itemAt(self, *args):
+        if len(args) == 1:
+            line, col = args[0]
+            print(f'called Tree.itemAt with args', args)
+        else:
+            line, col = args
+            print(f'called Tree.itemAt with args ({line}, {col})')
         return f'item at ({line}, {col})'
 
     def count(self):
@@ -654,7 +704,8 @@ class MockTreeWidget:
 
     def visualItemRect(self, arg):
         print('called Tree.visualItemRect with arg', arg)
-        return types.SimpleNamespace(bottomRight=lambda *x: 'bottom-right')
+        return types.SimpleNamespace(bottomRight=lambda *x: 'bottom-right',
+                                     center=lambda *x: 'center')
 
     def setAlternatingRowColors(self, arg):
         print(f'called Tree.setAlternatingRowColors with arg {arg}')
@@ -673,6 +724,18 @@ class MockTreeWidget:
 
     def setDropIndicatorShown(self, arg):
         print(f'called Tree.setDropIndicatorShown with arg {arg}')
+
+    def dropEvent(self, event):
+        print(f'called Tree.dropEvent with arg {event}')
+
+    def mousePressEvent(self, event):
+        print(f'called Tree.mousePressEvent with arg {event}')
+
+    def mouseReleaseEvent(self, event):
+        print(f'called Tree.mouseReleaseEvent with arg {event}')
+
+    def keyReleaseEvent(self, event):
+        print(f'called Tree.keyReleaseEvent with arg {event}')
 
 
 class MockTreeItem:
@@ -724,6 +787,7 @@ class MockTreeItem:
         self.subitems.insert(index, item)
 
     def childCount(self):
+        print('called TreeItem.childCount')
         return len(self.subitems)
 
     def child(self, num):
@@ -740,6 +804,9 @@ class MockTreeItem:
 
     def removeChild(self, item):
         print('called TreeItem.removeChild')
+
+    def sortChildren(self, *args):
+        print('called TreeItem.sortChildren with args', args)
 
     def setHidden(self, value):
         print(f"called TreeItem.setHidden with arg `{value}`")
@@ -773,6 +840,31 @@ class MockFont:
 
     def setBold(self, value):
         print(f'called Font.setBold with arg `{value}`')
+
+    def setItalic(self, value):
+        print(f'called Font.setItalic with arg `{value}`')
+
+    def setUnderline(self, value):
+        print(f'called Font.setUnderline with arg `{value}`')
+
+    def setStrikeOut(self, value):
+        print(f'called Font.setStrikeOut with arg `{value}`')
+
+    def bold(self):
+        print(f'called Font.bold')
+        return 'bold'
+
+    def italic(self):
+        print(f'called Font.italic')
+        return 'italic'
+
+    def underline(self):
+        print(f'called Font.underline')
+        return 'underline'
+
+    def strikeOut(self):
+        print(f'called Font.strikeOut')
+        return 'strikeOut'
 
     def setFamily(self, *args):
         print('called Font.setFamily')
@@ -947,12 +1039,19 @@ class MockEditorWidget:
     def text(self):
         return 'editor text'
 
+    def document(self):
+        return MockTextDocument()
+
     def toPlainText(self):
         print('called Editor.toPlainText')
         return self._text or 'editor text'
 
     def setFocus(self, *args):
         print('called Editor.setFocus')
+
+    def hasFocus(self, *args):
+        print('called Editor.hasFocus')
+        return False
 
     def setTabChangesFocus(self, value):
         print(f'called Editor.setTabChangesFocus with arg {value}')
@@ -973,6 +1072,34 @@ class MockEditorWidget:
     def moveCursor(self, *args):
         print('called Editor.moveCursor with args', args)
 
+    def textCursor(self):
+        print('called Editor.textCursor')
+        return MockTextCursor()
+
+    def setTextCursor(self, *args):
+        print('called Editor.setTextCursor')  #  with args', args)
+
+    def selectAll(self):
+        print('called Editor.selectAll')
+
+    def setAlignment(self, value):
+        print(f'called Editor.setAlignment with arg {int(value)}')  # PyQt5
+
+    def mergeCurrentCharFormat(self, arg):
+        print(f'called Editor.mergeCurrentCharFormat with arg {arg}')
+
+    def focusInEvent(self, *args):
+        print(f'called Editor.focusInEvent with args', args)
+
+    def focusOutEvent(self, *args):
+        print(f'called Editor.focusOutEvent with args', args)
+
+    def find(self, *args):
+        print('called Editor.find with args', args)
+
+    def ensureCursorVisible(self):
+        print('called Editor.ensureCursorVisible')
+
 
 class MockTextDocument:
     ImageResource = 2
@@ -986,11 +1113,64 @@ class MockTextDocument:
                   f" ({args[0]}, {type(args[1])}, {type(args[2])})")
 
     def setModified(self, value):
-        print(f'called textDocument.setModified with arg {value}')
+        print(f'called TextDocument.setModified with arg {value}')
+
+    def setHtml(self, value):
+        print(f"called TextDocument.setHtml with arg '{value}'")
+
+    def setPlainText(self, text):
+        print(f"called TextDocument.setPlainText with arg '{text}'")
+
+    def toPlainText(self):
+        print(f'called TextDocument.toPlainText')
+        return 'plain text'
+
+    def find(self, text):
+        print(f"called TextDocument.find with arg '{text}'")
 
     def isModified(self):
         print('called textDocument.isModified')
         return 'modified'
+
+
+class MockTextCursor:
+    def __init__(self):
+        print('called TextCursor.__init__')
+
+    def hasSelection(self):
+        print('called TextCursor.hasSelection')
+
+    def position(self):
+        print('called TextCursor.position')
+        return 'position'
+
+    def insertImage(self, arg):
+        print(f'called Cursor.insertImage with arg {arg}')
+
+    def setPosition(self, arg):
+        print(f'called TextCursor.setPosition with arg {arg}')
+
+    def select(self, arg):
+        print(f'called TextCursor.select with arg {arg}')
+
+    def mergeCharFormat(self, arg):
+        print(f'called TextCursor.mergeCharFormat with arg {arg}')
+
+    def blockFormat(self):
+        print(f'called TextCursor.BlockFormat with arg {arg}')
+
+    def setBlockFormat(self, arg):
+        print(f'called TextCursor.setBlockFormat with arg {arg}')
+
+
+class MockTextBlockFormat:
+    def __init__(self, *args):
+        print('called TextBlockFormat.__init__ with args', args)
+
+    def indent(self):
+        ""
+    def setIndent(self, value):
+        ""
 
 
 class MockTextCharFormat:
@@ -1013,6 +1193,16 @@ class MockTextCharFormat:
         print(f'called TextCharFormat.setFontUnderline with arg {arg}')
     def setFontStrikeOut(self, arg):
         print(f'called TextCharFormat.setFontStrikeOut with arg {arg}')
+    def setForeground(self, arg):
+        print(f'called TextCharFormat.setForeground with arg {arg}')
+    def foreground(self):
+        print(f'called TextCharFormat.foreground')
+        return MockBrush('fg')
+    def setBackground(self, arg):
+        print(f'called TextCharFormat.setBackground with arg {arg}')
+    def background(self):
+        print(f'called TextCharFormat.background')
+        return MockBrush('bg')
 
 
 class MockSysTrayIcon:
@@ -1420,6 +1610,11 @@ class MockComboBox:
 
     def setMinimumContentsLength(self, value):
         print(f'called ComboBox.setMinimumContentsLength with arg {value}')
+
+
+class MockFontComboBox(MockComboBox):
+    # activated = {str: MockSignal()}
+    pass
 
 
 class MockScrolledWidget:
