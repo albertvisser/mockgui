@@ -189,6 +189,9 @@ class MockWidget:
     def close(self):
         print('called Widget.close')
 
+    def setLayout(self, *args):
+        print('called Widget.setLayout')
+
 
 class MockScrollBar:
     def __init__(self, *args):
@@ -1269,6 +1272,9 @@ class MockDialog:
     def done(self, value):
         print(f'called Dialog.done with arg `{value}`')
 
+    def addAction(self, arg):
+        print('called Dialog.addAction')
+
 
 def get_item(parent, *args, **kwargs):
     print('called InputDialog.getItem with args', parent, args, kwargs)
@@ -1482,9 +1488,13 @@ class MockCheckBox:
     stateChanged = MockSignal()
 
     def __init__(self, *args):
-        print('called CheckBox.__init__')
+        if args and isinstance(args[0], str):
+            print(f"called CheckBox.__init__ with text '{args[0]}'")
+            self.textvalue = args[0]
+        else:
+            print('called CheckBox.__init__')
+            self.textvalue = ''
         self.checked = False
-        self.textvalue = args[0] if args else ''
 
     def setEnabled(self, value):
         print(f'called CheckBox.setEnabled with arg {value}')
@@ -1552,10 +1562,13 @@ class MockComboBox:
         print(f'called ComboBox.setEditText with arg `{text}`')
 
     def addItem(self, item):
-        print(f'called ComboBox.addItems with arg `{item}`')
+        print(f'called ComboBox.addItem with arg `{item}`')
 
     def addItems(self, itemlist):
         print(f'called ComboBox.addItems with arg {itemlist}')
+
+    def insertItem(self, row, item):
+        print(f'called ComboBox.insertItem with args ({row}, {item})')
 
     def insertItems(self, row, itemlist):
         print(f'called ComboBox.insertItems with args ({row}, {itemlist})')
@@ -1590,6 +1603,13 @@ class MockComboBox:
     def setCompleter(self, arg):
         print('called ComboBox.setCompleter with arg', arg)
 
+    def setAutoCompletionCaseSensitivity(self, arg):
+        print('called ComboBox.setAutoCompletionCaseSensitivity with arg', arg)
+
+    def completer(self):
+        print('called ComboBox.completer')
+        return MockCompleter()
+
     def count(self):
         print('called ComboBox.count')
         return 0
@@ -1611,6 +1631,10 @@ class MockComboBox:
     def setMinimumContentsLength(self, value):
         print(f'called ComboBox.setMinimumContentsLength with arg {value}')
 
+
+class MockCompleter:
+    def setCaseSensitivity(self, arg):
+        print(f"called Completer.setCaseSensitivity with arg {arg}")
 
 class MockFontComboBox(MockComboBox):
     # activated = {str: MockSignal()}
@@ -1855,6 +1879,9 @@ class MockMessageBox:
     def setDefaultButton(self, arg):
         print(f'called MessageBox.setDefaultButton with arg `{arg}`')
 
+    def setDetailedText(self, arg):
+        print(f'called MessageBox.setDetailedText with arg `{arg}`')
+
     def setEscapeButton(self, arg):
         print(f'called MessageBox.setEscapeButton with arg `{arg}`')
 
@@ -1866,6 +1893,9 @@ class MockMessageBox:
 
     def exec(self, *args):  # Qt6
         print('called MessageBox.exec')
+
+    def close(self, *args):
+        print('called MessageBox.close')
 
     def clickedButton(self):
         print('called MessageBox.clickedButton')
@@ -1998,6 +2028,8 @@ class MockTableItem:
     def flags(self):
         print('called TableItem.flags')
         return 8
+    def setToolTip(self, value):
+        print('called TableItem.setToolTip with arg', value)
 
 
 class MockTableSelectionRange:
@@ -2019,6 +2051,7 @@ class MockTableSelectionRange:
 
 
 class MockTable:
+    cellDoubleClicked = {(int, int): MockSignal}
     def __init__(self, *args):
         print('called Table.__init__ with args', args)
         self._cols = 0
@@ -2070,6 +2103,10 @@ class MockTable:
         print(f"called Table.insertColumn with arg '{colnum}'")
         self._cols += 1
 
+    def currentColumn(self):
+        print("called Table.currentColumn")
+        return 1
+
     def currentRow(self):
         print("called Table.currentRow")
         return 2
@@ -2093,16 +2130,22 @@ class MockTable:
         return None
 
     def clear(self):
-        print(f"called Table.clear")
+        print("called Table.clear")
+
+    def clearContents(self):
+        print("called Table.clearContents")
 
     def scrollToBottom(self):
-        print(f"called Table.scrollToBottom")
+        print("called Table.scrollToBottom")
 
     def setFocus(self):
-        print(f"called Table.setFocus")
+        print("called Table.setFocus")
 
     def setCurrentCell(self, *args):
-        print(f"called Table.setCurrentCell with args", args)
+        print("called Table.setCurrentCell with args", args)
+
+    def setGridStyle(self, arg):
+        print(f"called Table.setGridStyle with arg {arg}")
 
     def findItems(self, *args):
         print('called Table.findItems with args', args)
@@ -2111,6 +2154,13 @@ class MockTable:
     def selectedRanges(self):
         print('called Table.selectedRanges')
         return []
+
+    def selectedItems(self):
+        print('called Table.selectedItems')
+        return []
+
+    def setRowHeight(self, *args):
+        print("called Table.setRowHeight with args", args)
 
 
 class MockFontMetrics:
