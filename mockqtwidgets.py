@@ -54,6 +54,9 @@ class MockEvent:
     def pos(self):
         return ('x', 'y')
 
+    def position(self):
+        return MockPointF(1.1, 2.2)
+
     def button(self):
         return None
 
@@ -62,6 +65,16 @@ class MockEvent:
 
     def ignore(self):
         print('called event.ignore')
+
+
+class MockPointF:
+    def __init__(self, *args):
+        if len(args) == 2:
+            self._x = args[0]
+            self._y = args[1]
+
+    def toPoint(self):
+        return (int(self._x), int(self._y))
 
 
 class MockSignal:
@@ -375,6 +388,7 @@ class MockPixmap:
 
 
 class MockIcon:
+    ThemeIcon = types.SimpleNamespace(EditClear='')
     def __init__(self, arg):
         print(f'called Icon.__init__ with arg `{arg}`')
 
@@ -1059,8 +1073,8 @@ class MockEditorWidget:
     def setTabChangesFocus(self, value):
         print(f'called Editor.setTabChangesFocus with arg {value}')
 
-    def setTabStopWidth(self, value):
-        print(f'called Editor.setTabStopWidth with arg {value}')
+    def setTabStopDistance(self, value):
+        print(f'called Editor.setTabStopDistance with arg {value}')
 
     def insertFromMimeData(self, *args):
         print("called Editor.insertFromMimeData with args", args)
@@ -1160,10 +1174,14 @@ class MockTextCursor:
         print(f'called TextCursor.mergeCharFormat with arg {arg}')
 
     def blockFormat(self):
-        print(f'called TextCursor.BlockFormat with arg {arg}')
+        print(f'called TextCursor.blockFormat')
+        return MockTextBlockFormat()
 
     def setBlockFormat(self, arg):
-        print(f'called TextCursor.setBlockFormat with arg {arg}')
+        print(f'called TextCursor.setBlockFormat')  #  with arg {arg}')
+
+    def mergeBlockFormat(self, arg):
+        print(f'called TextCursor.mergeBlockFormat')  #  with arg {arg}')
 
 
 class MockTextBlockFormat:
@@ -1171,9 +1189,28 @@ class MockTextBlockFormat:
         print('called TextBlockFormat.__init__ with args', args)
 
     def indent(self):
-        ""
+        print("called TextBlockFormat.indent")
+        return 1
+
     def setIndent(self, value):
-        ""
+        print(f"called TextBlockFormat.setIndent with arg {value}")
+
+    def setLineHeight(self, *args):
+        print("called TextBlockFormat.setLineHeight with args", args)
+
+    def topMargin(self):
+        print("called TextBlockFormat.topMargin")
+        return 1
+
+    def setTopMargin(self, value):
+        print(f"called TextBlockFormat.setTopMargin with arg {value}")
+
+    def bottomMargin(self):
+        print("called TextBlockFormat.bottomMargin")
+        return 1
+
+    def setBottomMargin(self, value):
+        print(f"called TextBlockFormat.setBottomMargin with arg {value}")
 
 
 class MockTextCharFormat:
@@ -1635,6 +1672,7 @@ class MockComboBox:
 class MockCompleter:
     def setCaseSensitivity(self, arg):
         print(f"called Completer.setCaseSensitivity with arg {arg}")
+
 
 class MockFontComboBox(MockComboBox):
     # activated = {str: MockSignal()}
