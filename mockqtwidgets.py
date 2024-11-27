@@ -84,6 +84,9 @@ class MockSignal:
     def connect(self, *args):
         print('called Signal.connect with args', args)
 
+    def disconnect(self):
+        print('called Signal.disconnect')
+
 
 class MockAction:
     triggered = MockSignal()
@@ -146,8 +149,12 @@ class MockAction:
     def setStatusTip(self, data):
         self.statustip = data
 
+    def setToolTip(self, data):
+        print(f"called Action.setTooltip with arg '{data}'")
+
 
 class MockShortcut:
+    activated = MockSignal()
     def __init__(self, *args):
         print('called Shortcut.__init__ with args', args)
 
@@ -364,6 +371,9 @@ class MockFrame:
     def setLayout(self, arg):
         print(f'called Frame.setLayout with arg of type {type(arg)}')
 
+    def show(self):
+        print('called Frame.show')
+
     def close(self):
         print('called Frame.close')
 
@@ -487,14 +497,20 @@ class MockMenu:
 
 
 class MockToolBar:
-    def __init__(self):
-        print('called ToolBar.__init__ ')
+    def __init__(self, *args):
+        if args:
+            print('called ToolBar.__init__ with args', args)
+        else:
+            print('called ToolBar.__init__')
 
     def addAction(self, value):
         print('called ToolBar.addAction')
 
     def addWidget(self, value):
         print(f'called ToolBar.addWidget with arg {value}')
+
+    def addSeparator(self):
+        print('called ToolBar.addSeparator')
 
     def setEnabled(self, value):
         print(f'called ToolBar.setEnabled with arg {value}')
@@ -507,8 +523,11 @@ class MockSplitter:
     def __init__(self, *args):
         print('called Splitter.__init__')
 
-    def addWidget(self, *args):
-        print(f'called Splitter.addWidget with arg `{args[0]}`')
+    def addWidget(self, arg):
+        print(f"called Splitter.addWidget with arg of type {type(arg)}")
+
+    def setOrientation(self, *args):
+        print('called Splitter.setOrientation with args', args)
 
     def setSizes(self, *args):
         print('called Splitter.setSizes with args', args)
@@ -524,6 +543,9 @@ class MockTabWidget:
     def __init__(self, *args):
         print('called TabWidget.__init__')
         self._current = -1
+
+    def resize(self, *args):
+        print('called TabWidget.resize with args', args)
 
     def setCurrentIndex(self, num):
         print(f'called TabWidget.setCurrentIndex with arg `{num}`')
@@ -546,7 +568,10 @@ class MockTabWidget:
         print('called TabWidget.removeTab with arg', tab)
 
     def setTabText(self, *args):
-        print('called TabWidget.setTabtext with args', args)
+        print('called TabWidget.setTabText with args', args)
+
+    def setTabEnabled(self, *args):
+        print('called TabWidget.setTabEnabled with args', args)
 
     def tabText(self, *args):
         print('called TabWidget.tabtext with args', args)
@@ -595,6 +620,7 @@ class MockTreeWidget:
     DragDropMode = types.SimpleNamespace(InternalMove=4)  # Qt6
     itemSelectionChanged = MockSignal()
     itemEntered = MockSignal()
+    itemActivated = MockSignal()
     itemDoubleClicked = MockSignal()
     currentItemChanged = MockSignal()
 
@@ -1145,6 +1171,9 @@ class MockTextDocument:
     def find(self, text):
         print(f"called TextDocument.find with arg '{text}'")
 
+    def print(self, printer):
+        print(f'called TextDocument.print with arg {printer}')
+
     def isModified(self):
         print('called textDocument.isModified')
         return 'modified'
@@ -1270,6 +1299,12 @@ class MockStatusBar:
 
     def showMessage(self, text):
         print(f'called StatusBar.showMessage with arg `{text}`')
+
+    def addWidget(self, arg, **kwargs):
+        print(f'called StatusBar.addWidget with args (item of type {type(arg)},)', kwargs)
+
+    def addPermanentWidget(self, arg, **kwargs):
+        print(f'called StatusBar.addPermanentWidget with args (item of type {type(arg)},)', kwargs)
 
 
 class MockDialog:
@@ -1468,6 +1503,12 @@ class MockGridLayout:
     def insertStretch(self, *args):
         print('called Grid.insertStretch')
 
+    def setRowMinimumHeight(self, *args):
+        print('called Grid.setRowMinimumHeight with args', args)
+
+    def setColumnStretch(self, *args):
+        print('called Grid.setColumnStretch with args', args)
+
     def count(self):
         print('called Grid.count')
         return 3
@@ -1598,8 +1639,12 @@ class MockComboBox:
     def setEditText(self, text):
         print(f'called ComboBox.setEditText with arg `{text}`')
 
-    def addItem(self, item):
-        print(f'called ComboBox.addItem with arg `{item}`')
+    def addItem(self, *item):
+        print(f'called ComboBox.addItem with arg `{item[0]}`', end='')
+        if len(item) == 2:
+            print(f', userdata = {item[1]}')
+        else:
+            print()
 
     def addItems(self, itemlist):
         print(f'called ComboBox.addItems with arg {itemlist}')
@@ -1679,11 +1724,6 @@ class MockFontComboBox(MockComboBox):
     pass
 
 
-class MockScrolledWidget:
-    def __init__(self, *args):
-        print('called ScrolledWidget.__init__')
-
-
 class MockPushButton:
     clicked = MockSignal()
 
@@ -1735,6 +1775,7 @@ class MockPushButton:
 
 class MockRadioButton:
     clicked = MockSignal()
+    toggled = MockSignal()
 
     def __init__(self, *args, **kwargs):
         print('called RadioButton.__init__ with args', args, kwargs)
@@ -1749,6 +1790,9 @@ class MockRadioButton:
         print(f'called RadioButton.setChecked with arg `{value}`')
         self._checked = value
 
+    def setEnabled(self, value):
+        print(f'called RadioButton.setEnabled with arg `{value}`')
+
     def text(self):
         return self._text
 
@@ -1762,6 +1806,7 @@ class MockRadioButton:
 
 class MockLineEdit:
     textChanged = MockSignal()
+    EchoMode = types.SimpleNamespace(Normal=0, Password=2)
 
     def __init__(self, *args):
         print('called LineEdit.__init__')
@@ -1798,6 +1843,7 @@ class MockLineEdit:
 
     def clear(self):
         print('called LineEdit.clear')
+        self._text = ''
 
     def close(self):
         print('called LineEdit.close')
@@ -1816,6 +1862,9 @@ class MockLineEdit:
 
     def setFocus(self):
         print('called LineEdit.setFocus')
+
+    def setEchoMode(selfi, value):
+        print(f'called LineEdit.setEchoMode with arg {value}')
 
 
 class MockButtonBox:
@@ -1838,12 +1887,17 @@ class MockButtonGroup:
     def __init__(self, *args):
         print('called ButtonGroup.__init__ with args', args)
         self._buttons = {}
-        self._maxid = 0
+        self._lastid = -1
 
-    def addButton(self, button):
-        print(f"called ButtonGroup.addButton with arg of type {type(button)}")
-        self._maxid += 1
-        self._buttons[self._maxid] = button
+    def addButton(self, button, buttonid=-1):
+        print(f"called ButtonGroup.addButton with arg of type {type(button)}", end='')
+        if buttonid == -1:
+            print()
+            self._lastid -= 1
+            self._buttons[self._lastid] = button
+        else:
+            print(f' and id {buttonid}')
+            self._buttons[buttonid] = button
 
     def button(self, button_id):
         print(f"called ButtonGroup.button with arg '{button_id}'")
@@ -1866,6 +1920,9 @@ class MockButtonGroup:
             if button.isChecked():
                 return button
         return None
+
+    def setExclusive(self, value):
+        print(f'called ButtonGroup.setExclusive with arg {value}')
 
 
 def show_information(parent, caption, message, *args):
@@ -1964,13 +2021,12 @@ class MockSpinBox:
 
 class MockListBox:
     itemDoubleClicked = MockSignal()
+    itemActivated = MockSignal()
+    currentItemChanged = MockSignal()
 
     def __init__(self, *args):
         print('called List.__init__')
-        try:
-            self.list = args[0]
-        except IndexError:
-            self.list = []
+        self.list = []
 
     def setVisible(self, value):
         print(f'called List.setVisible with arg `{value}`')
@@ -1999,8 +2055,24 @@ class MockListBox:
     def insertItems(self, row, itemlist):
         print(f'called List.insertItems with args ({row}, {itemlist})')
 
+    def insertItem(self, row, item):
+        print(f'called List.insertItem with args ({row}, item of type {type(item)})')
+
+    def setCurrentItem(self, item):
+        print('called List.setCurrentItem')
+
     def currentItem(self):
-        pass
+        print('called List.currentItem')
+        return 'current item'
+
+    def openPersistentEditor(self, arg):
+        print(f'called List.openPersistentEditor with arg {arg}')
+
+    def editItem(self, arg):
+        print(f'called editItem with arg {arg}')
+
+    def closePersistentEditor(self, arg):
+        print(f'called List.closePersistentEditor with arg {arg}')
 
     def setCurrentRow(self, row):
         print(f'called List.setCurrentRow with rownumber {row}')
@@ -2011,7 +2083,12 @@ class MockListBox:
         return 'current row'
 
     def item(self, row):
-        return self.list[row]
+        try:
+            result = self.list[row]
+        except IndexError:
+            print(f"called List.item with arg {row}'")
+            result = None
+        return result
     # def setFocus(self, value):
     #     print(f'called List.setFocus with arg `{value}`')
 
@@ -2038,18 +2115,26 @@ class MockListBox:
 
 class MockListItem:
     def __init__(self, *args):
-        print('called ListItem.__init__')
-        self.name = args[0]
+        if args:
+            print('called ListItem.__init__ with args', args)
+            self._name = args[0] if args else ''
+        else:
+            print('called ListItem.__init__')
+            self._name = ''
 
     def text(self):
-        return self.name
+        return self._name
 
     def setText(self, name):
         print(f"called ListItem.setText with arg '{name}'")
-        self.name = name
+        self._name = name
+
+    def setData(self, *args):
+        print("called ListItem.setData with args", args)
+        self._data = {args[0]: args[1]}
 
     def setSelected(self, arg):
-        print(f'called ListItem.setSelected with arg `{arg}` for `{self.name}`')
+        print(f'called ListItem.setSelected with arg `{arg}` for `{self._name}`')
 
 
 class MockTableItem:
@@ -2272,3 +2357,16 @@ class MockUrl:
 class MockPoint:
     def __init__(self, *args):
         print('called Point.__init__ with args', args)
+
+
+class MockPrintPreviewDialog:
+    paintRequested = MockSignal()
+
+    def __init__(self, *args):
+        print('called PrintPreviewDialog.__init__ with args', args)
+
+    def exec(self):
+        print('called PrintPreviewDialog.exec')
+
+    def done(self, value):
+        print(f'called PrintPreviewDialog.done with arg {value}')

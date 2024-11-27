@@ -421,6 +421,9 @@ class MockListBox:
     def Insert(self, *args):
         print(f'insert `{args[0]}` into listbox')
 
+    def InsertItems(self, *args):
+        print('called ListBox.InsertItems with args', args)
+
     def GetCount(self):
         print('called listbox.GetCount()')
 
