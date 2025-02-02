@@ -1516,6 +1516,9 @@ class MockGridLayout:
     def removeItem(self, *args):
         print('called Grid.removeItem with args', args)
 
+    def itemAtPosition(self, *args):
+        print('called Grid.itemAtPosition with args', args)
+
     def update(self):
         print('called Grid.update')
 
@@ -1558,6 +1561,9 @@ class MockLabel:
 
     def setWordWrap(self, value):
        print(f'called Label.setWordWrap with arg {value}')
+
+    def close(self):
+        print('called Label.close')
 
 
 class MockCheckBox:
@@ -1752,6 +1758,9 @@ class MockPushButton:
 
     def setIcon(self, value):
         print(f'called PushButton.setIcon with arg `{value}`')
+
+    def setFixedSize(self, *args):
+        print('called PushButton.setFixedSize with args', args)
 
     def setIconSize(self, arg):
         print(f'called PushButton.setIconSize with arg of type {type(arg)}')
