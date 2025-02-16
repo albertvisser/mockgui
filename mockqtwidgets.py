@@ -1423,6 +1423,9 @@ class MockVBoxLayout:
         print('called VBox.addSpacing')
         self._count += 1
 
+    def __len__(self):
+        return self._count
+
     def count(self):
         return self._count
 
@@ -1719,6 +1722,9 @@ class MockComboBox:
     def setMinimumContentsLength(self, value):
         print(f'called ComboBox.setMinimumContentsLength with arg {value}')
 
+    def close(self):
+        print('called ComboBox.close')
+
 
 class MockCompleter:
     def setCaseSensitivity(self, arg):
@@ -1780,6 +1786,9 @@ class MockPushButton:
 
     def setToolTip(self, value):
         print(f'called PushButton.setToolTip with arg `{value}`')
+
+    def close(self):
+        print('called PushButton.close')
 
 
 class MockRadioButton:
