@@ -2156,11 +2156,11 @@ class MockListItem:
 
 
 class MockTableItem:
-    def __init__(self, arg='xy'):
-        print('called TableItem.__init__ with arg', arg)
+    def __init__(self, arg=''):
+        print(f"called TableItem.__init__ with arg '{arg}'")
         self._text = arg
     def setText(self, value):
-        print('called TableItem.settext with arg', value)
+        print(f"called TableItem.setText with arg '{value}'")
         self._text = value
     def text(self):
         return self._text
@@ -2261,7 +2261,7 @@ class MockTable:
         self._cols -= 1
 
     def setItem(self, x, y, item):
-        print(f"called Table.setItem with args ({x}, {y}, item of {type(item)})")
+        print(f"called Table.setItem with args ({x}, {y}, item of type {type(item)})")
         self._items[(x, y)] = item
 
     def item(self, x, y):
