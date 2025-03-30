@@ -1521,6 +1521,7 @@ class MockGridLayout:
 
     def itemAtPosition(self, *args):
         print('called Grid.itemAtPosition with args', args)
+        return 'itematpos'
 
     def update(self):
         print('called Grid.update')
@@ -1536,6 +1537,7 @@ class MockLabel:
             self._text = args[0]
         else:
             print('called Label.__init__')
+            self._text = ''
 
     def setVisible(self, value):
         print(f'called Label.setVisible with arg `{value}`')
@@ -1573,6 +1575,7 @@ class MockCheckBox:
     clicked = MockSignal()
     toggled = MockSignal()
     stateChanged = MockSignal()
+    checkStateChanged = MockSignal()
 
     def __init__(self, *args):
         if args and isinstance(args[0], str):
@@ -1585,6 +1588,9 @@ class MockCheckBox:
 
     def setEnabled(self, value):
         print(f'called CheckBox.setEnabled with arg {value}')
+
+    def setDisabled(self, value):
+        print(f'called CheckBox.setDisabled with arg {value}')
 
     def setChecked(self, value):
         print(f'called CheckBox.setChecked with arg {value}')
@@ -1824,6 +1830,7 @@ class MockRadioButton:
 
 class MockLineEdit:
     textChanged = MockSignal()
+    textEdited = MockSignal()
     EchoMode = types.SimpleNamespace(Normal=0, Password=2)
 
     def __init__(self, *args):
