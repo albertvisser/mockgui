@@ -1481,6 +1481,9 @@ class MockHBoxLayout:
     def itemAt(self, num):
         pass
 
+    def takeAt(self, num):
+        pass
+
     def update(self):
         print('called HBox.update')
 
@@ -1515,6 +1518,14 @@ class MockGridLayout:
     def count(self):
         print('called Grid.count')
         return 3
+
+    def rowCount(self):
+        print('called Grid.rowCount')
+        return 1
+
+    def columnCount(self):
+        print('called Grid.columnCount')
+        return 1
 
     def removeItem(self, *args):
         print('called Grid.removeItem with args', args)
