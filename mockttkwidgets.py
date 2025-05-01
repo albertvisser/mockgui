@@ -91,6 +91,23 @@ class MockComboBox:
         print('called ComboBox.destroy')
 
 
+class MockSpinBox:
+    def __init__(self, master=None, *args, **kwargs):
+        print('called SpinBox.__init__ with args', type(master), args, kwargs)
+    def grid(self, *args, **kwargs):
+        print('called SpinBox.grid with args', args, kwargs)
+    def state(self, *args):
+        print('called SpinBox.state with args', args)
+    def bind(self, *args):
+        print('called SpinBox.bind with args', args)
+    def configure(self, **kwargs):
+        print('called SpinBox.configure with args', kwargs)
+    def focus_set(self):
+        print('called SpinBox.focus_set')
+    def destroy(self):
+        print('called SpinBox.destroy')
+
+
 class MockButton:
     def __init__(self, master=None, *args, **kwargs):
         print('called Button.__init__ with args', type(master), args, kwargs)
