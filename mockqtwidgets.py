@@ -916,8 +916,12 @@ class MockFont:
         print('called Font.family')
         return 'fontfamily'
 
-    def setFixedPitch(self, *args):
-        print('called Font.setFixedPitch')
+    def fixedPitch(self, *args):
+        print('called Font.fixedPitch')
+        return 'fixedPitch'
+
+    def setFixedPitch(self, value):
+        print(f'called Font.setFixedPitch with arg `{value}`')
 
     def setPointSize(self, *args):
         print('called Font.setPointSize')
@@ -1262,6 +1266,8 @@ class MockTextCharFormat:
         print(f'called TextCharFormat.setFontUnderline with arg {arg}')
     def setFontStrikeOut(self, arg):
         print(f'called TextCharFormat.setFontStrikeOut with arg {arg}')
+    def setFontFixedPitch(self, arg):
+        print(f'called TextCharFormat.setFontFixedPitch with arg {arg}')
     def setForeground(self, arg):
         print(f'called TextCharFormat.setForeground with arg {arg}')
     def foreground(self):
