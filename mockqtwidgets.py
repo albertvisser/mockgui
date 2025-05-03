@@ -2228,6 +2228,9 @@ class MockTable:
     def setColumnWidth(self, *args):
         print(f"called Table.setColumnWidth with args", args)
 
+    def resizeColumnsToContents(self):
+        print("called Table.resizeColumnsToContents")
+
     def setColumnCount(self, count):
         print(f"called Table.setColumnCount with arg '{count}'")
         self._cols = count
