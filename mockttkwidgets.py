@@ -2,6 +2,7 @@
 """
 import types
 
+
 class MockDialog:
     def __init__(self, *args, **kwargs):
         print('called Toplevel.__init__ with args', args, kwargs)
@@ -57,6 +58,10 @@ class MockLabel:
         print('called Label.grid with args', args, kwargs)
     def state(self, *args):
         print('called Label.state with args', args)
+    def bind(self, *args):
+        print('called Label.bind with args', args)
+    def configure(self, **kwargs):
+        print('called Label.configure with args', kwargs)
     def destroy(self):
         print('called Label.destroy')
 
