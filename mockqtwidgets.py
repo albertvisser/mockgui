@@ -1913,7 +1913,7 @@ class MockButtonBox:
     Ok = 1  # Qt5
     Cancel = 2  # Qt5
     ActionRole = 9  # Qt5
-    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2)  # Qt6
+    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Save=4)  # Qt6
     ButtonRole = types.SimpleNamespace(ActionRole=9)  # Qt6
     accepted = MockSignal()
     rejected = MockSignal()
