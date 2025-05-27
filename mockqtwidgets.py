@@ -1260,6 +1260,9 @@ class MockTextCharFormat:
         print(f'called TextCharFormat.setFontWeight with arg {arg}')
     def setFontPointSize(self, arg):
         print(f'called TextCharFormat.setFontPointSize with arg {arg}')
+    def fontPointSize(self):
+        print('called TextCharFormat.fontPointSize')
+        return 10
     def setFontItalic(self, arg):
         print(f'called TextCharFormat.setFontItalic with arg {arg}')
     def setFontUnderline(self, arg):
