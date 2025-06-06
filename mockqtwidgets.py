@@ -103,6 +103,7 @@ class MockAction:
         self.statustip = ''
 
     def setCheckable(self, state):
+        print(f'called Action.setCheckable with arg `{state}`')
         self.checkable = state
 
     def setDisabled(self, state):
@@ -128,7 +129,7 @@ class MockAction:
         return self.label
 
     def setFont(self, data):
-        print(f'called Action.setFont')
+        print('called Action.setFont')
 
     def setIcon(self, data):
         print(f'called Action.setIcon with arg `{data}`')
@@ -143,14 +144,15 @@ class MockAction:
         self._shortcuts = data
 
     def shortcuts(self):
-        print(f'called Action.shortcuts')
+        print('called Action.shortcuts')
         return self._shortcuts
 
     def setStatusTip(self, data):
+        print(f"called Action.setStatusTip with arg '{data}'")
         self.statustip = data
 
     def setToolTip(self, data):
-        print(f"called Action.setTooltip with arg '{data}'")
+        print(f"called Action.setToolTip with arg '{data}'")
 
 
 class MockShortcut:
@@ -242,7 +244,7 @@ class MockScrollArea:
         print(f'called ScrollArea.setWidgetResizable with arg `{arg}`')
 
     def ensureVisible(self, *args):
-        print(f'called ScrollArea.ensureVisible with args', args)
+        print('called ScrollArea.ensureVisible with args', args)
 
     def verticalScrollBar(self):
         print('called ScrollArea.verticalScrollBar')
@@ -360,7 +362,7 @@ class MockFrame:
         print('called Frame.__init__')
 
     def setWindowTitle(self, arg):
-        print(f"called Frame.setWindowTitle wth arg '{arg}'")
+        print(f"called Frame.setWindowTitle with arg '{arg}'")
 
     def setFrameShape(self, arg):
         print(f'called Frame.setFrameShape with arg `{arg}`')
@@ -386,11 +388,11 @@ class MockPixmap:
         print('called Pixmap.__init__')
 
     def load(self, fname):
-        print('called Pixmap.load for `fname`')
+        print(f'called Pixmap.load with arg `{fname}`')
         return 'ok'
 
     def scaled(self, x, y):
-        print(f'called Pixmap.scaled to `{x}`, `{y}`')
+        print(f'called Pixmap.scaled with args `{x}`, `{y}`')
         return 'ok'
 
     def fill(self, color):
@@ -408,7 +410,7 @@ class MockIcon:
 
 class MockImage:
     def __init__(self, *args):
-        print(f'called Image.__init__ with args', args)
+        print('called Image.__init__ with args', args)
 
     def save(self, filename):
         print(f'called image.save with arg {filename}')
@@ -439,6 +441,7 @@ class MockMenu:
     # def addAction(self, text, func):
 
     def actions(self):
+        print('called Menu.actions')
         return self._actions
 
     def addAction(self, *args):
@@ -476,7 +479,7 @@ class MockMenu:
         self.menutext = text
 
     def title(self):
-        print(f"called Menu.title")
+        print("called Menu.title")
         return self.menutext
 
     def removeAction(self, action):
@@ -516,7 +519,7 @@ class MockToolBar:
         print(f'called ToolBar.setEnabled with arg {value}')
 
     def setIconSize(self, *args):
-        print(f'called ToolBar.setIconSize')
+        print('called ToolBar.setIconSize')
 
 
 class MockSplitter:
@@ -533,6 +536,7 @@ class MockSplitter:
         print('called Splitter.setSizes with args', args)
 
     def sizes(self, *args):
+        print('called Splitter.sizes')
         return 'left this wide', 'right that wide'
 
 
@@ -601,13 +605,13 @@ class MockHeader:
         print(f'called Header.setStretchLastSection with arg {value}')
 
     def setSectionResizeMode(self, col, mode):
-        print(f'called Header.setSectionResizeMode for col {col} mode {mode}')
+        print(f'called Header.setSectionResizeMode with args ({col}, {mode})')
 
     def setSectionsClickable(self, value):
         print(f'called Header.setSectionsClickable with value {value}')
 
     def resizeSection(self, col, width):
-        print(f'called Header.resizeSection for col {col} width {width}')
+        print(f'called Header.resizeSection with args ({col}, {width})')
 
     def setVisible(self, value):
         print(f"called Header.setVisible with args '{value}'")
@@ -653,6 +657,7 @@ class MockTreeWidget:
         print(f'called Tree.setUniformRowHeights with arg `{count}`')
 
     def headerItem(self):
+        print('called Tree.headerItem')
         return MockTreeItem()
 
     def setSelectionMode(self, *args):
@@ -722,7 +727,7 @@ class MockTreeWidget:
     def itemAt(self, *args):
         if len(args) == 1:
             line, col = args[0]
-            print(f'called Tree.itemAt with args', args)
+            print('called Tree.itemAt with args', args)
         else:
             line, col = args
             print(f'called Tree.itemAt with args ({line}, {col})')
@@ -793,26 +798,29 @@ class MockTreeItem:
         self.subitems = []
         self._parent = 'parent'
 
-    def setText(self, col, text):
-        print(f'called TreeItem.setText with arg `{text}` for col {col}')
+    def setText(self, *args):
+        print('called TreeItem.setText with args', args)
+        col, text = args
         if len(self._text) < col + 1:
             self._text.append(text)
         else:
             self._text[col] = text
 
     def text(self, col):
-        print(f'called TreeItem.text for col {col}')
+        print(f'called TreeItem.text with arg {col}')
         return self._text[col]
 
-    def setData(self, col, role, data):
-        print(f'called TreeItem.setData to `{data}` with role {role} for col {col}')
+    def setData(self, *args):
+        print('called TreeItem.setData with args', args)
+        col, role, data = args
         if len(self._data) < col + 1:
             self._data.append(data)
         else:
             self._data[col] = data
 
-    def data(self, col, role):
-        print(f'called TreeItem.data for col {col} role {role}')
+    def data(self, *args):
+        col, role = args
+        print('called TreeItem.data with args', args)
         return self._data[col]
 
     def parent(self):
@@ -858,10 +866,11 @@ class MockTreeItem:
         print(f"called TreeItem.setExpanded with arg `{value}`")
 
     def isExpanded(self):
-        print(f"called TreeItem.isExpanded")
+        print("called TreeItem.isExpanded")
         return False
 
     def font(self, *args):
+        print('called TreeItem.font')
         return MockFont()
 
     def setFont(self, *args):
@@ -894,19 +903,19 @@ class MockFont:
         print(f'called Font.setStrikeOut with arg `{value}`')
 
     def bold(self):
-        print(f'called Font.bold')
+        print('called Font.bold')
         return 'bold'
 
     def italic(self):
-        print(f'called Font.italic')
+        print('called Font.italic')
         return 'italic'
 
     def underline(self):
-        print(f'called Font.underline')
+        print('called Font.underline')
         return 'underline'
 
     def strikeOut(self):
-        print(f'called Font.strikeOut')
+        print('called Font.strikeOut')
         return 'strikeOut'
 
     def setFamily(self, *args):
@@ -936,7 +945,7 @@ class MockFontInfo:
         print(f'called FontInfo.__init__ with arg {arg}')
 
     def family(self):
-        print(f'called Font.family')
+        print('called Font.family')
         return 'family name'
 
 
@@ -956,11 +965,8 @@ class MockFontDialog:
 class MockEditorWidget:
     "contains elements of TextEdit, RichTextEdit, Scintilla"
     # wordt in albums_gui.py aangeroepen met argumenten tekst en parent
-    WrapWord = 1  # Qt5
     WrapMode = types.SimpleNamespace(WrapWord=1)  # Qt6
-    SloppyBraceMatch = 2  # Qt5
     BraceMatch = types.SimpleNamespace(SloppyBraceMatch=2)  # Qt6
-    PlainFoldStyle = 3  # Qt5
     FoldStyle = types.SimpleNamespace(PlainFoldStyle=3)  # Qt6
     defaultfamily = 'font family'
     defaultsize = '12pt'
@@ -1013,7 +1019,7 @@ class MockEditorWidget:
         print(f'called Editor.setReadOnly with arg `{value}`')
 
     def setFont(self, data):
-        print(f'called Editor.setFont')  # with arg `{data}`')
+        print('called Editor.setFont')  # with arg `{data}`')
 
     def setFontWeight(self, arg):
         print(f'called Editor.setFontWeight with arg {arg}')
@@ -1031,14 +1037,14 @@ class MockEditorWidget:
         print(f"called Editor.setFontPointSize with arg '{arg}'")
 
     def currentFont(self):
-        print(f'called Editor.currentFont')
+        print('called Editor.currentFont')
         return MockFont()
 
     def setCurrentFont(self, data):
-        print(f'called Editor.setCurrentFont')  # with arg `{data}`')
+        print('called Editor.setCurrentFont')  # with arg `{data}`')
 
     def setMarginsFont(self, data):
-        print(f'called Editor.setMarginsFont')  # with arg `{data}`')
+        print('called Editor.setMarginsFont')  # with arg `{data}`')
 
     def setMarginWidth(self, *args):
         print('called Editor.setMarginWidth with args', args)
@@ -1064,7 +1070,8 @@ class MockEditorWidget:
     def setEnabled(self, value):
         print(f'called Editor.setEnabled with arg {value}')
 
-    def isModified(self, *args):
+    def isModified(self):  # , *args):
+        print('called Editor.isModified')
         return 'x'
 
     def setPlainText(self, value):
@@ -1080,13 +1087,15 @@ class MockEditorWidget:
         print(f'called Editor.setHtml with arg `{text}`')
 
     def toHtml(self):
-        print(f'called Editor.toHtml')
+        print('called Editor.toHtml')
         return self._text or 'editor text'
 
     def text(self):
+        print('called Editor.text')
         return 'editor text'
 
     def document(self):
+        print('called Editor.document')
         return MockTextDocument()
 
     def toPlainText(self):
@@ -1114,7 +1123,7 @@ class MockEditorWidget:
         return False
 
     def charformat_changed(self, arg):
-        print(f'called Editor.charformat_changed')  #  with arg {arg}')
+        print('called Editor.charformat_changed')  # with arg {arg}')
 
     def moveCursor(self, *args):
         print('called Editor.moveCursor with args', args)
@@ -1124,7 +1133,7 @@ class MockEditorWidget:
         return MockTextCursor()
 
     def setTextCursor(self, *args):
-        print('called Editor.setTextCursor')  #  with args', args)
+        print('called Editor.setTextCursor')  # with args', args)
 
     def selectAll(self):
         print('called Editor.selectAll')
@@ -1136,10 +1145,10 @@ class MockEditorWidget:
         print(f'called Editor.mergeCurrentCharFormat with arg {arg}')
 
     def focusInEvent(self, *args):
-        print(f'called Editor.focusInEvent with args', args)
+        print('called Editor.focusInEvent with args', args)
 
     def focusOutEvent(self, *args):
-        print(f'called Editor.focusOutEvent with args', args)
+        print('called Editor.focusOutEvent with args', args)
 
     def find(self, *args):
         print('called Editor.find with args', args)
@@ -1169,7 +1178,7 @@ class MockTextDocument:
         print(f"called TextDocument.setPlainText with arg '{text}'")
 
     def toPlainText(self):
-        print(f'called TextDocument.toPlainText')
+        print('called TextDocument.toPlainText')
         return 'plain text'
 
     def find(self, text):
@@ -1207,14 +1216,14 @@ class MockTextCursor:
         print(f'called TextCursor.mergeCharFormat with arg {arg}')
 
     def blockFormat(self):
-        print(f'called TextCursor.blockFormat')
+        print('called TextCursor.blockFormat')
         return MockTextBlockFormat()
 
     def setBlockFormat(self, arg):
-        print(f'called TextCursor.setBlockFormat')  #  with arg {arg}')
+        print('called TextCursor.setBlockFormat')  # with arg {arg}')
 
     def mergeBlockFormat(self, arg):
-        print(f'called TextCursor.mergeBlockFormat')  #  with arg {arg}')
+        print('called TextCursor.mergeBlockFormat')  # with arg {arg}')
 
 
 class MockTextBlockFormat:
@@ -1250,10 +1259,10 @@ class MockTextCharFormat:
     def __init__(self, *args):
         print('called TextCharFormat.__init__ with args', args)
     def font(self):
-        print(f'called TextCharFormat.font')
+        print('called TextCharFormat.font')
         return 'a font'
     def setFont(self, arg):
-        print(f'called TextCharFormat.setFont')  # with arg {arg}')
+        print('called TextCharFormat.setFont')  # with arg {arg}')
     def setFontFamily(self, arg):
         print(f'called TextCharFormat.setFontFamily with arg {arg}')
     def setFontWeight(self, arg):
@@ -1274,12 +1283,12 @@ class MockTextCharFormat:
     def setForeground(self, arg):
         print(f'called TextCharFormat.setForeground with arg {arg}')
     def foreground(self):
-        print(f'called TextCharFormat.foreground')
+        print('called TextCharFormat.foreground')
         return MockBrush('fg')
     def setBackground(self, arg):
         print(f'called TextCharFormat.setBackground with arg {arg}')
     def background(self):
-        print(f'called TextCharFormat.background')
+        print('called TextCharFormat.background')
         return MockBrush('bg')
 
 
@@ -1436,6 +1445,7 @@ class MockVBoxLayout:
         return self._count
 
     def count(self):
+        print('called VBox.count')
         return self._count
 
     def removeWidget(self, *args):
@@ -1485,6 +1495,7 @@ class MockHBoxLayout:
         self._count += 1
 
     def count(self):
+        print('called HBox.count')
         return self._count
 
     def itemAt(self, num):
@@ -1585,7 +1596,7 @@ class MockLabel:
         print(f"called Label.setOpenExternalLinks with arg '{target}'")
 
     def setWordWrap(self, value):
-       print(f'called Label.setWordWrap with arg {value}')
+        print(f'called Label.setWordWrap with arg {value}')
 
     def close(self):
         print('called Label.close')
@@ -1621,7 +1632,7 @@ class MockCheckBox:
         self.checkable = state
 
     def toggle(self):
-        print(f'called CheckBox.toggle')
+        print('called CheckBox.toggle')
         self.checked = not self.checked
 
     def isChecked(self):
@@ -1691,6 +1702,7 @@ class MockComboBox:
         print(f'called ComboBox.insertItems with args ({row}, {itemlist})')
 
     def height(self):
+        print('called ComboBox.height')
         return 100
 
     def setEditable(self, value):
@@ -1798,6 +1810,7 @@ class MockPushButton:
         print(f'called PushButton.setIconSize with arg of type {type(arg)}')
 
     def text(self):
+        print('called PushButton.text')
         return self._text
 
     def setText(self, value):
@@ -1838,6 +1851,7 @@ class MockRadioButton:
         print(f'called RadioButton.setEnabled with arg `{value}`')
 
     def text(self):
+        print('called radioButton.text')
         return self._text
 
     def setText(self, value):
@@ -1913,9 +1927,6 @@ class MockLineEdit:
 
 
 class MockButtonBox:
-    Ok = 1  # Qt5
-    Cancel = 2  # Qt5
-    ActionRole = 9  # Qt5
     StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Save=4)  # Qt6
     ButtonRole = types.SimpleNamespace(ActionRole=9)  # Qt6
     accepted = MockSignal()
@@ -2028,9 +2039,6 @@ class MockMessageBox:
     def addButton(self, *args):
         print(f'called MessageBox.addButton with arg `{args}`')
 
-    def exec_(self, *args):  # Qt5
-        print('called MessageBox.exec_')
-
     def exec(self, *args):  # Qt6
         print('called MessageBox.exec')
 
@@ -2058,10 +2066,10 @@ class MockSpinBox:
         print(f"called SpinBox.setValue with arg '{arg}'")
         self._value = arg
     def value(self):
-        print(f"called SpinBox.value")
+        print("called SpinBox.value")
         return self._value
     def close(self):
-        print(f"called SpinBox.close")
+        print("called SpinBox.close")
 
 
 class MockListBox:
@@ -2086,6 +2094,7 @@ class MockListBox:
         return len(self.list)
 
     def count(self):
+        print('called List.count')
         return len(self.list)
 
     def clear(self):
@@ -2120,11 +2129,11 @@ class MockListBox:
         print(f'called List.closePersistentEditor with arg {arg}')
 
     def setCurrentRow(self, row):
-        print(f'called List.setCurrentRow with rownumber {row}')
+        print(f'called List.setCurrentRow with arg {row}')
         self.row = row
 
     def currentRow(self):
-        print(f'called List.currentRow')
+        print('called List.currentRow')
         return 'current row'
 
     def item(self, row):
@@ -2150,7 +2159,7 @@ class MockListBox:
         print(f'called List.takeItem with arg `{value}`')  # on `{self.list}`')
 
     def row(self, value):
-        print(f'called List.row with arg `{value}`')  #  on `{self.list}`')
+        print(f'called List.row with arg `{value}`')  # on `{self.list}`')
         return value
 
     def addItem(self, value):
@@ -2168,6 +2177,7 @@ class MockListItem:
             self._name = ''
 
     def text(self):
+        print('called ListItem.text')
         return self._name
 
     def setText(self, name):
@@ -2190,6 +2200,7 @@ class MockTableItem:
         print(f"called TableItem.setText with arg '{value}'")
         self._text = value
     def text(self):
+        print('called TableItem.text')
         return self._text
     def setFlags(self, flags):
         print(f'called TableItem.setFlags with arg {flags}')
@@ -2210,11 +2221,11 @@ class MockTableSelectionRange:
         self._cols = self._maxcol - self._fromcol + 1
 
     def topRow(self):
-        print(f"called TableRange.topRow")
+        print("called TableRange.topRow")
         return self._fromrow
 
     def rowCount(self):
-        print(f"called TableRange.rowCount")
+        print("called TableRange.rowCount")
         return self._rows
 
 
@@ -2229,7 +2240,7 @@ class MockTable:
         self._items = {}
 
     def setColumnWidth(self, *args):
-        print(f"called Table.setColumnWidth with args", args)
+        print("called Table.setColumnWidth with args", args)
 
     def resizeColumnsToContents(self):
         print("called Table.resizeColumnsToContents")
@@ -2243,11 +2254,11 @@ class MockTable:
         self._rows = count
 
     def rowCount(self):
-        print(f"called Table.rowCount")
+        print("called Table.rowCount")
         return self._rows
 
     def columnCount(self):
-        print(f"called Table.columnCount")
+        print("called Table.columnCount")
         return self._cols
 
     def setHorizontalHeaderLabels(self, headerlist):
@@ -2380,11 +2391,11 @@ class MockUndoStack:
     def clear(self):
         print("called UndoRedoStack.clear")
     def push(self, arg):
-        print(f"called UndoRedoStack.push")
+        print("called UndoRedoStack.push")
     def undo(self):
-        print(f"called UndoRedoStack.undo")
+        print("called UndoRedoStack.undo")
     def redo(self):
-        print(f"called UndoRedoStack.redo")
+        print("called UndoRedoStack.redo")
 
 
 class MockUndoCommand:
