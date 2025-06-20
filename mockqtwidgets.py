@@ -412,6 +412,9 @@ class MockImage:
     def __init__(self, *args):
         print('called Image.__init__ with args', args)
 
+    def load(self, *args):
+        print(f'called image.load with args', args)
+
     def save(self, filename):
         print(f'called image.save with arg {filename}')
 
