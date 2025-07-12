@@ -40,9 +40,11 @@ def mock_show_info(*args, **kwargs):
 
 class MockFrame:
     def __init__(self, master=None, *args, **kwargs):
-        print('called Frame.__init__ with args', type(master), args, kwargs)
+        print('called Frame.__init__ with args', type(master).__name__, args, kwargs)
     def grid(self, *args, **kwargs):
         print('called Frame.grid with args', args, kwargs)
+    def forget(self):
+        print('called Frame.forget')
     def state(self, *args):
         print('called Frame.state with args', args)
     def columnconfigure(self, *args, **kwargs):
@@ -53,7 +55,7 @@ class MockFrame:
 
 class MockLabel:
     def __init__(self, master=None, *args, **kwargs):
-        print('called Label.__init__ with args', type(master), args, kwargs)
+        print('called Label.__init__ with args', type(master).__name__, args, kwargs)
     def grid(self, *args, **kwargs):
         print('called Label.grid with args', args, kwargs)
     def state(self, *args):
@@ -68,28 +70,58 @@ class MockLabel:
 
 class MockCheckBox:
     def __init__(self, master=None, *args, **kwargs):
-        print('called CheckBox.__init__ with args', type(master), args, kwargs)
+        print('called CheckBox.__init__ with args', type(master).__name__, args, kwargs)
+        if 'variable' in kwargs:
+            self._variable = kwargs['variable']
+        else:
+            self._variable = MockStringVar()
+    def cget(self, name):
+        if name == 'variable':
+            return self._variable
+        else:
+            return name
     def grid(self, *args, **kwargs):
         print('called CheckBox.grid with args', args, kwargs)
     def state(self, *args):
         print('called CheckBox.state with args', args)
     def instate(self, *args):
         print('called CheckBox.instate with args', args)
+    def getvar(self, arg):
+        # print(f'called CheckBox.getvar with arg {arg}')
+        return arg
+    # def setvar(self, arg, value):
+    #     print(f'called CheckBox.setvar with args {arg}, {value}')
     def destroy(self):
         print('called CheckBox.destroy')
 
 
 class MockComboBox:
     def __init__(self, master=None, *args, **kwargs):
-        print('called ComboBox.__init__ with args', type(master), args, kwargs)
+        print('called ComboBox.__init__ with args', type(master).__name__, args, kwargs)
+        if 'textvariable' in kwargs:
+            self._textvariable = kwargs['textvariable']
+        else:
+            self._textvariable = MockStringVar()
+    def cget(self, name):
+        if name == 'textvariable':
+            return self._textvariable
+        else:
+            return name
     def grid(self, *args, **kwargs):
         print('called ComboBox.grid with args', args, kwargs)
+    def forget(self):
+        print('called ComboBox.forget')
     def state(self, *args):
         print('called ComboBox.state with args', args)
     def bind(self, *args):
         print('called ComboBox.bind with args', args)
     def configure(self, **kwargs):
         print('called ComboBox.configure with args', kwargs)
+    def getvar(self, arg):
+        # print(f'called ComboBox.getvar with arg {arg}')
+        return arg
+    # def setvar(self, arg, value):
+    #     print(f'called ComboBox.setvar with args {arg}, {value}')
     def focus_set(self):
         print('called ComboBox.focus_set')
     def destroy(self):
@@ -98,7 +130,16 @@ class MockComboBox:
 
 class MockSpinBox:
     def __init__(self, master=None, *args, **kwargs):
-        print('called SpinBox.__init__ with args', type(master), args, kwargs)
+        print('called SpinBox.__init__ with args', type(master).__name__, args, kwargs)
+        if 'textvariable' in kwargs:
+            self._textvariable = kwargs['textvariable']
+        else:
+            self._textvariable = MockIntVar()
+    def cget(self, name):
+        if name == 'textvariable':
+            return self._textvariable
+        else:
+            return name
     def grid(self, *args, **kwargs):
         print('called SpinBox.grid with args', args, kwargs)
     def state(self, *args):
@@ -107,6 +148,9 @@ class MockSpinBox:
         print('called SpinBox.bind with args', args)
     def configure(self, **kwargs):
         print('called SpinBox.configure with args', kwargs)
+    def getvar(self, arg):
+        # print(f'called Entry.getvar with arg {arg}')
+        return arg
     def focus_set(self):
         print('called SpinBox.focus_set')
     def destroy(self):
@@ -115,9 +159,11 @@ class MockSpinBox:
 
 class MockButton:
     def __init__(self, master=None, *args, **kwargs):
-        print('called Button.__init__ with args', type(master), args, kwargs)
+        print('called Button.__init__ with args', type(master).__name__, args, kwargs)
     def grid(self, *args, **kwargs):
         print('called Button.grid with args', args, kwargs)
+    def forget(self):
+        print('called Button.forget')
     def state(self, *args):
         print('called Button.state with args', args)
     def bind(self, *args):
@@ -130,11 +176,27 @@ class MockButton:
 
 class MockEntry:
     def __init__(self, master=None, *args, **kwargs):
-        print('called Entry.__init__ with args', type(master), args, kwargs)
+        print('called Entry.__init__ with args', type(master).__name__, args, kwargs)
+        if 'textvariable' in kwargs:
+            self._textvariable = kwargs['textvariable']
+        else:
+            self._textvariable = MockStringVar()
+    def cget(self, name):
+        if name == 'textvariable':
+            return self._textvariable
+        else:
+            return name
     def grid(self, *args, **kwargs):
         print('called Entry.grid with args', args, kwargs)
     def state(self, *args):
         print('called Entry.state with args', args)
+    def getvar(self, arg):
+        # print(f'called Entry.getvar with arg {arg}')
+        return arg
+    # def setvar(self, arg, value):
+    #     print(f'called Entry.setvar with args {arg}, {value}')
+    def focus_set(self):
+        print('called Entry.focus_set')
     def destroy(self):
         print('called Entry.destroy')
 
@@ -155,7 +217,8 @@ class MockStringVar:
         print('called StringVar.get')
         return self._value
     def trace_add(self, *args):
-        print('called StringVar.trace_add')  #  with args', args)
+        print('called StringVar.trace_add with args', args)
+
 
 class MockIntVar:
     def __init__(self, *args):

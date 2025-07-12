@@ -35,7 +35,7 @@ class MockColor:
 
 # class MockControl:
 #     def setVisible(self, value):
-#         print(f'called control.setVisible with args `{type(self)}`, `{value}`')
+#         print(f'called control.setVisible with args `{type(self)__name__}`, `{value}`')
 class MockEvent:
     def __init__(self, **kwargs):
         self._key = None
@@ -96,7 +96,7 @@ class MockAction:
         self.label = args[-2] if len(args) > 1 else ''
         self._icon = args[0] if len(args) > 2 else None
         if self._icon:
-            args = ('item of type Icon',) + args[1:]
+            args = ('Icon',) + args[1:]
         print('called Action.__init__ with args', args)
         self._shortcuts = []
         self.checkable = self.checked = False
@@ -172,7 +172,7 @@ class MockApplication:
         print('called Application.exec')
 
     def setOverrideCursor(self, arg):
-        print(f'called Application.setOverrideCursor with arg of type {type(arg)}')
+        print(f'called Application.setOverrideCursor with arg {type(arg).__name__}')
 
     def restoreOverrideCursor(self):
         print('called Application.restoreOverrideCursor')
@@ -212,7 +212,7 @@ class MockWidget:
         print('called Widget.close')
 
     def setLayout(self, *args):
-        print('called Widget.setLayout')
+        print(f'called Widget.setLayout with arg {type(args[0]).__name__}')
 
 
 class MockScrollBar:
@@ -235,7 +235,7 @@ class MockScrollArea:
         print('called ScrollArea.__init__ with args', args)
 
     def setWidget(self, arg):
-        print(f'called ScrollArea.setWidget with arg of type `{type(arg)}`')
+        print(f'called ScrollArea.setWidget with arg `{type(arg).__name__}`')
 
     def setAlignment(self, arg):
         print(f'called ScrollArea.setAlignment with arg {arg}')
@@ -341,7 +341,7 @@ class MockMainWindow:
         return MockMenuBar()
 
     def setCentralWidget(self, arg):
-        print(f'called MainWidget.setCentralWindow with arg of type `{type(arg)}`')
+        print(f'called MainWidget.setCentralWindow with arg `{type(arg).__name__}`')
 
     def addAction(self, arg):
         print('called MainWindow.addAction')
@@ -371,7 +371,7 @@ class MockFrame:
         print(f'called Frame.setFrameStyle with arg `{arg}`')
 
     def setLayout(self, arg):
-        print(f'called Frame.setLayout with arg of type {type(arg)}')
+        print(f'called Frame.setLayout with arg {type(arg).__name__}')
 
     def show(self):
         print('called Frame.show')
@@ -530,7 +530,7 @@ class MockSplitter:
         print('called Splitter.__init__')
 
     def addWidget(self, arg):
-        print(f"called Splitter.addWidget with arg of type {type(arg)}")
+        print(f"called Splitter.addWidget with arg {type(arg).__name__}")
 
     def setOrientation(self, *args):
         print('called Splitter.setOrientation with args', args)
@@ -673,7 +673,7 @@ class MockTreeWidget:
         print('called Tree.setFocus')
 
     def addTopLevelItem(self, arg):
-        print('called Tree.addTopLevelItem')  # with arg of type `{type(arg)}`')   spreekt vanzelf
+        print('called Tree.addTopLevelItem')  # with arg {type(arg).__name__}')   spreekt vanzelf
 
     def topLevelItem(self, arg):
         print(f'called Tree.topLevelItem with arg `{arg}`')
@@ -1169,7 +1169,7 @@ class MockTextDocument:
     def addResource(self, *args):
         if args[0] == self.ImageResource:
             print("called TextDocument.addResource with args"
-                  f" ({args[0]}, {type(args[1])}, {type(args[2])})")
+                  f" ({args[0]}, {type(args[1]).__name__}, {type(args[2]).__name__})")
 
     def setModified(self, value):
         print(f'called TextDocument.setModified with arg {value}')
@@ -1322,10 +1322,10 @@ class MockStatusBar:
         print(f'called StatusBar.showMessage with arg `{text}`')
 
     def addWidget(self, arg, **kwargs):
-        print(f'called StatusBar.addWidget with args (item of type {type(arg)},)', kwargs)
+        print(f'called StatusBar.addWidget with args ({type(arg).__name__},)', kwargs)
 
     def addPermanentWidget(self, arg, **kwargs):
-        print(f'called StatusBar.addPermanentWidget with args (item of type {type(arg)},)', kwargs)
+        print(f'called StatusBar.addPermanentWidget with args ({type(arg).__name__},)', kwargs)
 
 
 class MockDialog:
@@ -1352,7 +1352,7 @@ class MockDialog:
         print('called Dialog.setWindowIcon with args', args)
 
     def setLayout(self, *args):
-        print('called Dialog.setLayout')
+        print(f'called Dialog.setLayout with arg {type(args[0]).__name__}')
 
     def accept(self):
         print('called Dialog.accept')
@@ -1424,16 +1424,16 @@ class MockVBoxLayout:
 
     def addWidget(self, *args):
         # print('called VBox.addWidget')
-        print(f'called VBox.addWidget with arg of type {type(args[0])}')
+        print(f'called VBox.addWidget with arg {type(args[0]).__name__}')
         self._count += 1
 
     def addLayout(self, *args):
         # print('called VBox.addLayout')
-        print(f'called VBox.addLayout with arg of type {type(args[0])}')
+        print(f'called VBox.addLayout with arg {type(args[0]).__name__}')
         self._count += 1
 
     def insertLayout(self, *args):
-        print(f'called VBox.insertLayout with arg1 {args[0]} and arg2 of type {type(args[1])}')
+        print(f'called VBox.insertLayout with args ({args[0]}, {type(args[1]).__name__})')
         self._count += 1
 
     def addStretch(self, *args):
@@ -1452,7 +1452,7 @@ class MockVBoxLayout:
         return self._count
 
     def removeWidget(self, *args):
-        print(f'called VBox.removeWidget with arg of type {type(args[0])}')
+        print(f'called VBox.removeWidget with arg {type(args[0]).__name__}')
         self._count -= 1
 
     def removeItem(self, *args):
@@ -1475,14 +1475,14 @@ class MockHBoxLayout:
     def addWidget(self, *args, **kwargs):
         # print('called HBox.addWidget')
         if kwargs:
-            print(f'called HBox.addWidget with arg of type {type(args[0])}, kwargs', kwargs)
+            print(f'called HBox.addWidget with arg {type(args[0]).__name__}, kwargs', kwargs)
         else:
-            print(f'called HBox.addWidget with arg of type {type(args[0])}')
+            print(f'called HBox.addWidget with arg {type(args[0]).__name__}')
         self._count += 1
 
     def addLayout(self, *args):
         # print('called HBox.addLayout')
-        print(f'called HBox.addLayout with arg of type {type(args[0])}')
+        print(f'called HBox.addLayout with arg {type(args[0]).__name__}')
         self._count += 1
 
     def addSpacing(self, *args):
@@ -1510,6 +1510,10 @@ class MockHBoxLayout:
     def update(self):
         print('called HBox.update')
 
+    def removeWidget(self, *args):
+        print(f'called HBox.removeWidget with arg {type(args[0]).__name__}')
+        self._count -= 1
+
 
 class MockGridLayout:
     def __init__(self, *args):
@@ -1517,11 +1521,11 @@ class MockGridLayout:
 
     def addWidget(self, *args):
         # print('called Grid.addWidget')
-        print(f'called Grid.addWidget with arg of type {type(args[0])} at {args[1:]}')
+        print(f'called Grid.addWidget with arg {type(args[0]).__name__} at {args[1:]}')
 
     def addLayout(self, *args):
         # print('called Grid.addLayout')
-        print(f'called Grid.addLayout with arg of type {type(args[0])} at {args[1:]}')
+        print(f'called Grid.addLayout with arg {type(args[0]).__name__} at {args[1:]}')
 
     def addSpacing(self, *args):
         print('called Grid.addSpacing')
@@ -1561,7 +1565,7 @@ class MockGridLayout:
         print('called Grid.update')
 
     def removeWidget(self, *args):
-        print(f'called Grid.removeWidget with arg of type {type(args[0])}')
+        print(f'called Grid.removeWidget with arg {type(args[0]).__name__}')
 
 
 class MockLabel:
@@ -1810,7 +1814,7 @@ class MockPushButton:
         print('called PushButton.setFixedSize with args', args)
 
     def setIconSize(self, arg):
-        print(f'called PushButton.setIconSize with arg of type {type(arg)}')
+        print(f'called PushButton.setIconSize with arg {type(arg).__name__}')
 
     def text(self):
         print('called PushButton.text')
@@ -1854,7 +1858,7 @@ class MockRadioButton:
         print(f'called RadioButton.setEnabled with arg `{value}`')
 
     def text(self):
-        print('called radioButton.text')
+        print('called RadioButton.text')
         return self._text
 
     def setText(self, value):
@@ -1949,7 +1953,7 @@ class MockButtonGroup:
         self._lastid = -1
 
     def addButton(self, button, buttonid=-1):
-        print(f"called ButtonGroup.addButton with arg of type {type(button)}", end='')
+        print(f"called ButtonGroup.addButton with arg {type(button).__name__}", end='')
         if buttonid == -1:
             print()
             self._lastid -= 1
@@ -1963,7 +1967,7 @@ class MockButtonGroup:
         return self._buttons[button_id]
 
     def id(self, button):
-        print(f"called ButtonGroup.id with arg of type {type(button)}")
+        print(f"called ButtonGroup.id with arg {type(button).__name__}")
         for button_id, button_ in self._buttons.items():
             if button_ is button:
                 return button_id
@@ -2113,7 +2117,7 @@ class MockListBox:
         print(f'called List.insertItems with args ({row}, {itemlist})')
 
     def insertItem(self, row, item):
-        print(f'called List.insertItem with args ({row}, item of type {type(item)})')
+        print(f'called List.insertItem with args ({row}, {type(item).__name__})')
 
     def setCurrentItem(self, item):
         print('called List.setCurrentItem')
@@ -2305,7 +2309,7 @@ class MockTable:
         self._cols -= 1
 
     def setItem(self, x, y, item):
-        print(f"called Table.setItem with args ({x}, {y}, item of type {type(item)})")
+        print(f"called Table.setItem with args ({x}, {y}, {type(item).__name__})")
         self._items[(x, y)] = item
 
     def item(self, x, y):
