@@ -2006,15 +2006,9 @@ def ask_question(parent, caption, message, buttons, defaultButton=None):
 
 
 class MockMessageBox:
-    Ok = 1
-    Cancel = 2
-    Yes = 4
-    No = 8
-    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Yes=4, No=8)  # Qt6
-    AcceptRole = 1
-    ButtonRole = types.SimpleNamespace(AcceptRole=1)  # Qt6
-    Information = 2
-    Icon = types.SimpleNamespace(Information=2)  # Qt6
+    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Yes=4, No=8)
+    ButtonRole = types.SimpleNamespace(AcceptRole=1)
+    Icon = types.SimpleNamespace(Information=2)
     information = staticmethod(show_information)
     critical = staticmethod(show_critical)
     question = staticmethod(ask_question)
@@ -2036,6 +2030,9 @@ class MockMessageBox:
 
     def setDefaultButton(self, arg):
         print(f'called MessageBox.setDefaultButton with arg `{arg}`')
+
+    def setTextFormat(self, arg):
+        print(f'called MessageBox.setTextFormat with arg `{arg}`')
 
     def setDetailedText(self, arg):
         print(f'called MessageBox.setDetailedText with arg `{arg}`')
