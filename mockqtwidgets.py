@@ -797,7 +797,7 @@ class MockTreeItem:
         if args:
             self._text = list(args)
         else:
-            self._text = []
+            self._text = ['']
         self.subitems = []
         self._parent = 'parent'
 
@@ -811,7 +811,9 @@ class MockTreeItem:
 
     def text(self, col):
         print(f'called TreeItem.text with arg {col}')
-        return self._text[col]
+        with contextlib.suppress(IndexError):
+            return self._text[col]
+
 
     def setData(self, *args):
         print('called TreeItem.setData with args', args)
@@ -881,6 +883,10 @@ class MockTreeItem:
 
     def setForeground(self, *args):
         print('called TreeItem.setForeground with args', args)
+
+    def foreground(self, *args):
+        print('called TreeItem.foreground with args', args)
+        return 'foreground colour'
 
     def setTextAlignment(self, *args):
         print('called TreeItem.setTextAlignment with args', args)
