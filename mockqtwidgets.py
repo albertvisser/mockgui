@@ -1839,6 +1839,12 @@ class MockPushButton:
     def setToolTip(self, value):
         print(f'called PushButton.setToolTip with arg `{value}`')
 
+    def hide(self):
+        print('called PushButton.hide')
+
+    def show(self):
+        print('called PushButton.show')
+
     def close(self):
         print('called PushButton.close')
 
@@ -2008,7 +2014,7 @@ def ask_question(parent, caption, message, buttons, defaultButton=None):
               f' `{parent}` `{caption}` `{message}` `{buttons}` `{defaultButton}`')
     else:
         print(f'called MessageBox.question with args `{parent}` `{caption}` `{message}` `{buttons}`')
-    return MockMessageBox.No
+    return MockMessageBox.StandardButton.No
 
 
 class MockMessageBox:
