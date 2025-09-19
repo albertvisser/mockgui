@@ -91,6 +91,8 @@ class MockCheckBox:
         return arg
     # def setvar(self, arg, value):
     #     print(f'called CheckBox.setvar with args {arg}, {value}')
+    def bind(self, *args):
+        print('called CheckBox.bind with args', args)
     def destroy(self):
         print('called CheckBox.destroy')
 
@@ -172,6 +174,28 @@ class MockButton:
         print('called Button.configure with args', kwargs)
     def destroy(self):
         print('called Button.destroy')
+
+
+class MockMenu:
+    def __init__(self, master=None, *args, **kwargs):
+        print('called Menu.__init__ with args', type(master).__name__, args, kwargs)
+    def add_command(self, master=None, *args, **kwargs):
+        print('called Menu.add_command with args', args, kwargs)
+
+
+class MockMenubutton:
+    def __init__(self, master=None, *args, **kwargs):
+        print('called Menubutton.__init__ with args', type(master).__name__, args, kwargs)
+    def grid(self, *args, **kwargs):
+        print('called Menubutton.grid with args', args, kwargs)
+    def forget(self):
+        print('called Menubutton.forget')
+    def bind(self, *args):
+        print('called Menubutton.bind with args', args)
+    def configure(self, **kwargs):
+        print('called Menubutton.configure with args', kwargs)
+    def destroy(self):
+        print('called Menubutton.destroy')
 
 
 class MockEntry:

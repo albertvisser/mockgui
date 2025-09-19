@@ -341,7 +341,7 @@ class MockMainWindow:
         return MockMenuBar()
 
     def setCentralWidget(self, arg):
-        print(f'called MainWidget.setCentralWindow with arg `{type(arg).__name__}`')
+        print(f'called MainWidget.setCentralWidget with arg `{type(arg).__name__}`')
 
     def addAction(self, arg):
         print('called MainWindow.addAction')
