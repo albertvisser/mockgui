@@ -18,17 +18,68 @@ class MockFrame:
     def __init__(self, *args, **kwargs):
         print('called frame.__init__ with args', args, kwargs)
 
-    def Show(self):  # , *args):
-        print('called frame.Show')  #  with args', args)
+    def Show(self, *args):
+        if args:
+            print('called frame.Show with args', args)
+        else:
+            print('called frame.Show')
 
-    def Hide(self):  # , *args):
-        print('called frame.Hide')  #  with args', args)
+    def Hide(self):
+        print('called frame.Hide')
 
     def Bind(self, *args):
         print('called Frame.Bind with args', args)
 
+    def Connect(self, *args):
+        print('called Frame.Connect with args', args)
+
+    def SetIcon(self, *args):
+        print('called Frame.SetIcon with args', args)
+
+    def SetMenuBar(self, *args):
+        print('called Frame.SetMenuBar with args', args)
+
+    def SetSizer(self, *args):
+        print('called Frame.SetSizer with args', args)
+
+    def SetAutoLayout(self, *args):
+        print('called Frame.SetAutoLayout with args', args)
+
     def GetSize(self):
         pass
+
+    def GetPosition(self):
+        print("called Frame.GetPosition")
+        return 1, 2
+
+    def SetAcceleratorTable(self, *args):
+        print('called Frame.SetAcceleratorTable')  #  with args', args)
+
+    def Destroy(self, *args):
+        print('called Frame.Destroy with args', args)
+
+    def Close(self, value):
+        print(f'called Frame.Close with arg {value}')
+
+
+class MockPanel:
+    def __init__(self, *args, **kwargs):
+        print('called Panel.__init__ with args', args, kwargs)
+
+    def Layout(self, *args):
+        print('called Panel.Layout with args', args)
+
+    def SetSizer(self, *args):
+        print('called Panel.SetSizer with args', args)
+
+    def SetAutoLayout(self, *args):
+        print('called Panel.SetAutoLayout with args', args)
+
+    def Show(self, *args):
+        if args:
+            print('called Panel.Show with args', args)
+        else:
+            print('called Panel.Show')
 
 
 class MockSize:
@@ -49,11 +100,22 @@ class MockSize:
 class MockIcon:
     def __init__(self, *args):
         print('called Icon.__init__ with args', args)
+        self._fname = args[0] if len(args) > 0 else ''
+    def __repr__(self):
+        return f"Icon created from '{self._fname}'"
+
+
+class MockTaskBarIcon:
+    def __init__(self, *args):
+        print('called TaskBarIcon.__init__ with args', args)
 
 
 class MockMenuBar:
     def __init__(self, *args):
         print('called MenuBar.__init__ with args', args)
+
+    def __repr__(self):
+        return 'A MenuBar'
 
     def GetMenus(self, *args):
         print('called menubar.GetMenus with args', args)
@@ -70,6 +132,12 @@ class MockMenu:
     def __init__(self, *args):
         print('called Menu.__init__ with args', args)
 
+    def __repr__(self):
+        return 'A Menu'
+
+    def AppendSeparator(self, *args):
+        print('called menu.AppendSeparator with args', args)
+
     def Append(self, *args):
         print('called menu.Append with args', args)
 
@@ -83,6 +151,7 @@ class MockMenuItem:
 
     def GetId(self):  # , *args):
         print('called menuitem.GetId')  #  with args', args)
+        return 'NewID'
 
     def Bind(self, *args):
         print('called menuitem.Bind with args', args)
@@ -109,12 +178,68 @@ class MockSplitter:
         return 55
 
 
-class MockTree:
+class MockNoteBook:
     def __init__(self, *args):
-        print('called Tree.__init__ with args', args)
+        print('called NoteBook.__init__ with args', args)
+
+    def Bind(self, *args):
+        print('called NoteBook.Bind with args', args)
+
+    def GetPageCount(self, *args):
+        print('called NoteBook.GetPageCount with args', args)
+        return 'pagecount'
+
+    def GetPage(self, *args):
+        print('called NoteBook.GetPage with args', args)
+        return 'page'
+
+    def GetSelection(self, *args):
+        print('called NoteBook.GetSelection with args', args)
+        return 'selection'
+
+    def SetSelection(self, *args):
+        print('called NoteBook.SetSelection with args', args)
+
+    def AdvanceSelection(self, *args):
+        print('called NoteBook.AdvanceSelection with args', args)
+
+    def DeleteAllPages(self, *args):
+        print('called NoteBook.DeleteAllPages with args', args)
+
+    def DeletePage(self, *args):
+        print('called NoteBook.DeletePage with args', args)
+
+    def AddPage(self, *args):
+        print('called NoteBook.AddPage with args', args)
+
+    def SetPageText(self, *args):
+        print('called NoteBook.SetPageText with args', args)
+
+    def GetPageText(self, *args):
+        print('called NoteBook.GetPageText with args', args)
+        return 'title'
+
+    def HitTest(self, *args):
+        print('called NoteBook.HitTest with args', args)
+        return 'itemno', -1
+
+
+class MockTree:
+    def __init__(self, *args, **kwargs):
+        print('called Tree.__init__ with args', args, kwargs)
 
     def AddRoot(self, *args):
         print('called tree.AddRoot with args', args)
+        return 'The Root'
+
+    def AddColumn(self, *args):
+        print('called tree.AddColumn with args', args)
+
+    def SetMainColumn(self, *args):
+        print('called tree.SetMainColumn with args', args)
+
+    def SetColumnWidth(self, *args):
+        print('called tree.SetColumnWidth with args', args)
 
     def DeleteAllItems(self):  # , *args):
         print('called tree.DeleteAllItems')  #  with args', args)
@@ -151,6 +276,13 @@ class MockTree:
     def SetItemText(self, *args):
         print('called tree.SetItemText with args', args)
 
+    def SetItemTextColour(self, *args):
+        print('called tree.SetItemTextColour with args', args)
+
+    def GetItemParent(self, *args):
+        print('called tree.GetItemParent with args', args)
+        return 'parent'
+
     def GetItemData(self, *args):
         print('called tree.GetItemData with args', args)
         return 'itemkey', 'itemtext', ['keyword']
@@ -168,9 +300,11 @@ class MockTree:
 
     def AppendItem(self, *args):
         print('called tree.AppendItem with args', args)
+        return 'appended item'
 
     def PrependItem(self, *args):
         print('called tree.PrependItem with args', args)
+        return 'prepended item'
 
     def Delete(self, *args):
         print('called tree.Delete with args', args)
@@ -191,6 +325,9 @@ class MockTreeItem:
     def __init__(self, *args):
         print('called TreeItem.__init__ with args', args)
         self.tag = args[0]
+
+    def __repr__(self):
+        return self.tag
 
     def IsOk(self):
         print('called TreeItem.IsOk')
@@ -264,11 +401,11 @@ class MockTrayIcon:
     def __init__(self, *args):
         print('called TrayIcon.__init__ with args', args)
 
-    def SetIcon(self, *args):
-        print('called trayicon.SetIcon with args', args)
+    def SetIcon(self, *args, **kwargs):
+        print('called trayicon.SetIcon with args', args, kwargs)
 
     def Bind(self, *args, **kwargs):
-        print('called trayicon.Bind with args', args)
+        print('called trayicon.Bind with args', args, kwargs)
 
     def Destroy(self):  # , *args):
         print('called trayicon.Destroy')  #  with args', args)
@@ -276,7 +413,7 @@ class MockTrayIcon:
 
 class MockAcceleratorEntry:
     def __init__(self, *args, **kwargs):
-        print('called AcceleratorEntry.__init__ with args', args)
+        print('called AcceleratorEntry.__init__ with args', args, kwargs)
 
     def FromString(self, *args):
         print('called AcceleratorEntry.FromString with args', args)
@@ -293,9 +430,21 @@ class MockEvent:
     def __init__(self, *args):
         print('called event.__init__ with args', args)
 
+    def GetString(self):
+        print('called event.GetString')
+        return 'qqq'
+
     def GetItem(self):
         print('called event.GetItem')
         return 'treeitem'
+
+    def GetX(self):
+        print('called event.GetX')
+        return 'x'
+
+    def GetY(self):
+        print('called event.GetY')
+        return 'y'
 
     def Skip(self):
         print('called event.Skip')  #  with args', args)
@@ -311,6 +460,9 @@ class MockBoxSizer:
         self.orient = ('vert' if args[0] == wx.VERTICAL else
                        'hori' if args[0] == wx.HORIZONTAL else '')
         print(f'called BoxSizer.__init__ with args', args)
+
+    def __repr__(self):
+        return f'{self.orient} sizer'
 
     def Add(self, *args):
         print(f'called {self.orient} sizer.Add with args', '<item>', args[1:])
@@ -333,24 +485,34 @@ class MockGridSizer:
         print('called GridSizer.__init__ with args', args, kwargs)
 
     def Add(self, *args):
-        print('called gridsizer.Add with args', '<item>', args[1:])
+        print('called GridSizer.Add with args', '<item>', args[1:])
+
+
+class MockFlexGridSizer:
+    def __init__(self, *args, **kwargs):
+        print('called FlexGridSizer.__init__ with args', args, kwargs)
+
+    def Add(self, *args):
+        print('called FlexGridSizer.Add with args', '<item>', args[1:])
 
 
 class MockStaticText:
     def __init__(self, *args, **kwargs):
-        print('called StaticText.__init__ with args', args)
+        print('called StaticText.__init__ with args', args, kwargs)
 
 
 class MockCheckBox:
     def __init__(self, *args, **kwargs):
         print('called CheckBox.__init__ with args', args, kwargs)
+        self._checked = None
 
     def SetValue(self, *args):
         print(f'called checkbox.SetValue with args', args)
+        self._checked = args[0]
 
     def GetValue(self):
         print(f'called checkbox.GetValue')
-        return 'value from checkbox'
+        return self._checked if self._checked is not None else 'value from checkbox'
 
 
 class MockTextCtrl:
@@ -381,6 +543,22 @@ class MockButton:
     def GetId(self):  # , *args, **kwargs):
         print('called Button.GetId')  #  with args', args, kwargs)
 
+    def SetHelpText(self, value):
+        print(f"called Button.SetHelpText with arg '{value}'")
+
+
+class MockRadioButton:
+    def __init__(self, *args, **kwargs):
+        print('called RadioButton.__init__ with args', args, kwargs)
+
+    def SetValue(self, *args):
+        print(f'called radiobutton.SetValue with args', args)
+
+    def GetValue(self):  # , *args):
+        print(f'called radiobutton.GetValue')  #  with args', args)
+        return 'value from radiobutton'
+
+
 
 class MockComboBox:
     def __init__(self, *args, **kwargs):
@@ -398,6 +576,9 @@ class MockComboBox:
     def SetSelection(self, *args):
         print(f'called combobox.SetSelection with args', args)
 
+    def SetStringSelection(self, *args):
+        print(f'called combobox.SetStringSelection with args', args)
+
     def SetValue(self, *args):
         print(f'called combobox.SetValue with args', args)
 
@@ -408,11 +589,7 @@ class MockComboBox:
 
 class MockListBox:
     def __init__(self, *args, **kwargs):
-        # sellist = kwargs.get('choices', '')
-        # if sellist:
-        #     sellist = ' with arg `{}`'.format(sellist)
-        # print('called ListBox.__init__(){}'.format(sellist))
-        print('called ListBox.__init__ with args', args)
+        print('called ListBox.__init__ with args', args, kwargs)
 
     def Bind(self, *args):
         print('called listbox.bind with args', args)
@@ -450,7 +627,7 @@ class MockListBox:
 
 class MockDialog:
     def __init__(self, parent, *args, **kwargs):
-        print('called Dialog.__init__() with args', args, kwargs)
+        print('called Dialog.__init__ with args', args, kwargs)
 
     def __enter__(self):
         return self
@@ -460,6 +637,9 @@ class MockDialog:
 
     def ShowModal(self):
         return wx.ID_OK
+
+    def Accept(self):
+        print('called Dialog.Accept')
 
     def confirm(self):
         """methode gedefinieerd in notetree.wx_gui op alle subklassen van Dialog
@@ -472,8 +652,17 @@ class MockDialog:
     def SetTitle(self, text):
         print(f"called dialog.SetTitle with arg '{text}'")
 
+    def SetPosition(self, *args):
+        print("called dialog.SetPosition with args", args)
+
+    def GetAffirmativeId(self):
+        return wx.ID_OK
+
     def SetAffirmativeId(self, *args):
         print('called dialog.SetAffirmativeId with args', args)
+
+    def SetEscapeId(self, *args):
+        print('called dialog.SetEscapeId with args', args)
 
     def GetId(self, *args):
         print('called dialog.GetId with args', args)
@@ -490,7 +679,7 @@ class MockDialog:
 
 class MockTextDialog:
     def __init__(self, parent, *args, **kwargs):
-        print('called TextDialog.__init__() with args', args, kwargs)
+        print('called TextDialog.__init__ with args', args, kwargs)
 
     def __enter__(self):
         return self
@@ -535,7 +724,7 @@ class MockChoiceDialog:
 
 class MockMessageDialog:
     def __init__(self, *args, **kwargs):
-        print('called MessageDialog.__init__ with args', args)
+        print('called MessageDialog.__init__ with args', args, kwargs)
 
     def __enter__(self):
         return self
@@ -547,7 +736,33 @@ class MockMessageDialog:
         print('called MessageDialog.SetExtendedMessage with args', args)
 
     def ShowModal(self):
-        print('called MessageDialog.ShowModal with args', args)
+        print('called MessageDialog.ShowModal')
 
     def Destroy(self):
-        print('called MessageDialog.Destroy with args', args)
+        print('called MessageDialog.Destroy')
+
+
+class MockBrowse:
+    def __init__(self, *args, **kwargs):
+        print('called FileBrowseButtonWithHistory.__init__ with args', args, kwargs)
+        self._history = []
+
+    def GetHistory(self):
+        print('called FileBrowseButtonWithHistory.GetHistory')
+        return self._history
+
+    def SetHistory(self, history):
+        print('called FileBrowseButtonWithHistory.SetHistory with arg', history)
+        self._history = history
+
+    def SetValue(self, *args, **kwargs):
+        print('called FileBrowseButtonWithHistory.SetValue with args', args, kwargs)
+
+    def GetHistoryControl(self):
+        print('called FileBrowseButtonWithHistory.GetHistoryControl')
+        return MockComboBox()
+
+
+class MockColour:
+    def __init__(self, *args):
+        print('called colour.__init__ with args', args)
