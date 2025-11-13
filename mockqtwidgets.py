@@ -208,6 +208,9 @@ class MockWidget:
     def resize(self, *args):
         print('called Widget.resize with args', args)
 
+    def setFocus(self):
+        print('called Widget.setFocus')
+
     def close(self):
         print('called Widget.close')
 
@@ -1946,7 +1949,7 @@ class MockLineEdit:
 
 
 class MockButtonBox:
-    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Save=4)  # Qt6
+    StandardButton = types.SimpleNamespace(Ok=1, Cancel=2, Save=4, Close=8)  # Qt6
     ButtonRole = types.SimpleNamespace(ActionRole=9)  # Qt6
     accepted = MockSignal()
     rejected = MockSignal()
@@ -2008,7 +2011,9 @@ def show_critical(parent, caption, message, *args):
     print(f'called MessageBox.critical with args `{parent}` `{caption}` `{message}`')
 
 
-def ask_question(parent, caption, message, buttons, defaultButton=None):
+def ask_question(parent, caption, message, buttons=None, defaultButton=None):
+    if buttons is None:
+        buttons = MockMessageBox.StandardButton.Yes | MockMessageBox.StandardButton.No
     if defaultButton:
         print('called MessageBox.question with args'
               f' `{parent}` `{caption}` `{message}` `{buttons}` `{defaultButton}`')
@@ -2151,6 +2156,10 @@ class MockListBox:
     def currentRow(self):
         print('called List.currentRow')
         return 'current row'
+
+    def itemAt(self, *args):
+        print('called List.itemAt with args', args)
+        return 'item'
 
     def item(self, row):
         try:

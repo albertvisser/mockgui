@@ -36,6 +36,13 @@ class MockFrame:
     def SetIcon(self, *args):
         print('called Frame.SetIcon with args', args)
 
+    def CreateStatusBar(self):
+        print('called Frame.CreateStatusBar')
+        return MockStatusBar()
+
+    def SetToolBar(self, *args):
+        print('called Frame.SetToolBar with args', args)
+
     def SetMenuBar(self, *args):
         print('called Frame.SetMenuBar with args', args)
 
@@ -45,12 +52,25 @@ class MockFrame:
     def SetAutoLayout(self, *args):
         print('called Frame.SetAutoLayout with args', args)
 
+    def Layout(self, *args):
+        print('called Frame.Layout with args', args)
+
+    def SetSize(self, *args):
+        print("called Frame.SetSize with args", args)
+
+    def SetIcon(self, *args):
+        print("called Frame.SetIcon with args", args)
+
     def GetSize(self):
-        pass
+        print("called Frame.GetSize")
+        return MockSize(100, 10)
+
+    def SetPosition(self, *args):
+        print("called Frame.SetPosition with args", args)
 
     def GetPosition(self):
         print("called Frame.GetPosition")
-        return 1, 2
+        return MockPoint(1, 2)
 
     def SetAcceleratorTable(self, *args):
         print('called Frame.SetAcceleratorTable')  #  with args', args)
@@ -82,19 +102,32 @@ class MockPanel:
             print('called Panel.Show')
 
 
+class MockPoint:
+    def __init__(self, *args):
+        print('called Point.__init__ with args', args)
+        self.x = args[0]
+        self.y = args[1]
+
+    def __iter__(self):
+        return iter([self.x, self.y])
+
+
 class MockSize:
     def __init__(self, *args):
         print('called Size.__init__ with args', args)
-        self.w = args[0]
-        self.h = args[1]
+        self.x = args[0]
+        self.y = args[1]
+
+    def __iter__(self):
+        return iter([self.x, self.y])
 
     def GetWidth(self):
         print('called Size.GetWidth')
-        return self.w
+        return self.x
 
     def GetHeight(self):
         print('called Size.GetHeight')
-        return self.h
+        return self.y
 
 
 class MockIcon:
@@ -121,11 +154,18 @@ class MockMenuBar:
         print('called menubar.GetMenus with args', args)
         return [(MockMenu(), 'label1'), (MockMenu(), 'label2')]
 
+    def GetMenu(self, *args):
+        print('called menubar.GetMenus with args', args)
+        return MockMenu()
+
     def Append(self, *args):
         print('called menubar.Append with args', args)
 
     def Replace(self, *args):
         print('called menubar.Replace with args', args)
+
+    def EnableTop(self, *args):
+        print('called menubar.EnableTop with args', args)
 
 
 class MockMenu:
@@ -144,6 +184,13 @@ class MockMenu:
     def Destroy(self):  # , *args):
         print('called menu.Destroy')  #  with args', args)
 
+    def Enable(self, *args):
+        print(f'called menu.Enable with args', args)
+
+    def GetMenuItems(self):
+        print('called menu.GetMenuItems')
+        return []
+
 
 class MockMenuItem:
     def __init__(self, *args, **kwargs):
@@ -156,8 +203,41 @@ class MockMenuItem:
     def Bind(self, *args):
         print('called menuitem.Bind with args', args)
 
+    def SetBitmap(self, *args):
+        print('called menuitem.SetBitmap with args', args)
+
     def Check(self, value):
         print(f'called menuitem.Check with arg {value}')
+
+    def Enable(self, value):
+        print(f'called menuitem.Enable with arg {value}')
+
+    def GetItemLabelText(self):
+        print(f'called menuitem.GetItemLabelText')
+
+
+class MockToolBar:
+    def __init__(self, *args):
+        print('called ToolBar.__init__ with args', args)
+
+    def __repr__(self):
+        return 'A ToolBar'
+
+    def GetMenus(self, *args):
+        print('called menubar.GetMenus with args', args)
+        return [(MockMenu(), 'label1'), (MockMenu(), 'label2')]
+
+    def AddSeparator(self, *args):
+        print('called Toolbar.AddTool with args', args)
+
+    def AddTool(self, *args):
+        print('called Toolbar.AddTool with args', args)
+
+    def Replace(self, *args):
+        print('called Toolbar.Replace with args', args)
+
+    def Realize(self, *args):
+        print('called Toolbar.Realize with args', args)
 
 
 class MockSplitter:
@@ -172,6 +252,7 @@ class MockSplitter:
 
     def SetSashPosition(self, *args):
         print('called splitter.SetSashPosition with args', args)
+        check = int(args[0])  # force TypeError on wrong first argument
 
     def GetSashPosition(self):  # , *args):
         print('called splitter.SetSashPosition')
@@ -484,8 +565,11 @@ class MockGridSizer:
     def __init__(self, *args, **kwargs):
         print('called GridSizer.__init__ with args', args, kwargs)
 
-    def Add(self, *args):
-        print('called GridSizer.Add with args', '<item>', args[1:])
+    def Add(self, *args, **kwargs):
+        if kwargs:
+            print('called GridSizer.Add with args', '<item>', args[1:], kwargs)
+        else:
+            print('called GridSizer.Add with args', '<item>', args[1:])
 
 
 class MockFlexGridSizer:
@@ -559,7 +643,6 @@ class MockRadioButton:
         return 'value from radiobutton'
 
 
-
 class MockComboBox:
     def __init__(self, *args, **kwargs):
         sellist = kwargs.get('choices', '')
@@ -603,7 +686,8 @@ class MockListBox:
     def SetSelection(self, *args):
         print(f'called listbox.SetSelection with args', args)
 
-    def GetSelections(self, *args):
+    def GetSelections(self):
+        print(f'called listbox.GetSelections')
         return [1]
 
     def GetString(self, *args):
@@ -628,6 +712,7 @@ class MockListBox:
 class MockDialog:
     def __init__(self, parent, *args, **kwargs):
         print('called Dialog.__init__ with args', args, kwargs)
+        self.parent = parent
 
     def __enter__(self):
         return self
@@ -635,7 +720,14 @@ class MockDialog:
     def __exit__(self, *args):
         return True
 
+    def SetIcon(self, *args):
+        print("called Dialog.SetIcon with args", args)
+
+    def Show(self):
+        print('called Dialog.Show')
+
     def ShowModal(self):
+        print('called Dialog.ShowModal')
         return wx.ID_OK
 
     def Accept(self):
@@ -648,6 +740,9 @@ class MockDialog:
 
     def Destroy(self):
         print('called dialog.Destroy')
+
+    def SetSizer(self, *args):
+        print('called dialog.SetSizer with args', args)
 
     def SetTitle(self, text):
         print(f"called dialog.SetTitle with arg '{text}'")
@@ -667,14 +762,49 @@ class MockDialog:
     def GetId(self, *args):
         print('called dialog.GetId with args', args)
 
-    def SetSizer(self, *args):
-        print(f"called dialog.SetSizer with args", args)
+    def SetSize(self, *args):
+        print(f"called dialog.SetSize with args", args)
 
     def SetAutoLayout(self, *args):
         print('called dialog.SetAutoLayout with args', args)
 
+    def SetAcceleratorTable(self, *args):
+        print('called dialog.SetAcceleratorTable')  #  with args', args)
+
+    def CreateButtonSizer(self, *args):
+        print('called dialog.CreateButtonSizer with args', args)
+
+    def Bind(self, *args):
+        print('called dialog.Bind with args', args)
+
     def Layout(self, *args):
         print('called dialog.Layout with args', args)
+
+
+class MockFileDialog:
+    def __init__(self, parent, *args, **kwargs):
+        print('called TextDialog.__init__ with args', args, kwargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return True
+
+    def ShowModal(self):
+        print('called FileDialog.ShowModal')
+        return wx.ID_OK
+
+    def GetDirectory(self):
+        print('called FileDialog.GetDirectory')
+        return 'dirname'
+
+    def GetFilename(self):
+        print('called FileDialog.GetFilename')
+        return 'filename'
+
+    def Destroy(self):
+        print('called FileDialog.Destroy with args', args)
 
 
 class MockTextDialog:
@@ -688,6 +818,7 @@ class MockTextDialog:
         return True
 
     def ShowModal(self):
+        print('called TextDialog.ShowModal')
         return wx.ID_OK
 
     def GetValue(self):
@@ -709,6 +840,7 @@ class MockChoiceDialog:
         return True
 
     def ShowModal(self):
+        print('called ChoiceDialog.ShowModal')
         return wx.ID_OK
 
     def SetSelection(self, value):
