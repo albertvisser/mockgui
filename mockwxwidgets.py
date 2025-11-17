@@ -2,6 +2,9 @@
 """
 import wx
 
+def mock_messagebox(*args):
+    print(f'called wx.MessageBox with args', args)
+
 
 class MockApp:
     def __init__(self, *args):
@@ -730,8 +733,8 @@ class MockDialog:
         print('called Dialog.ShowModal')
         return wx.ID_OK
 
-    def Accept(self):
-        print('called Dialog.Accept')
+    # def Accept(self):
+    #     print('called Dialog.Accept')
 
     def confirm(self):
         """methode gedefinieerd in notetree.wx_gui op alle subklassen van Dialog
