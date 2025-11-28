@@ -217,6 +217,9 @@ class MockWidget:
     def setLayout(self, *args):
         print(f'called Widget.setLayout with arg {type(args[0]).__name__}')
 
+    def setEnabled(self, value):
+        print(f'called Widget.setEnabled with arg {value}')
+
 
 class MockScrollBar:
     def __init__(self, *args):
@@ -1625,8 +1628,10 @@ class MockCheckBox:
     checkStateChanged = MockSignal()
 
     def __init__(self, *args):
-        if args and isinstance(args[0], str):
-            print(f"called CheckBox.__init__ with text '{args[0]}'")
+        # if args and isinstance(args[0], str):
+        if args:
+            # print(f"called CheckBox.__init__ with text '{args[0]}'")
+            print(f"called CheckBox.__init__ with args", args)
             self.textvalue = args[0]
         else:
             print('called CheckBox.__init__')
@@ -2294,6 +2299,9 @@ class MockTable:
     def horizontalHeader(self):
         print("called Table.horizontalHeader")
         return self._header
+
+    def setVerticalHeaderItem(self, *args):
+        print(f"called Table.setVerticalHeaderItem for row {args[0]}")  # with args", args)
 
     def verticalHeader(self):
         print("called Table.verticalHeader")

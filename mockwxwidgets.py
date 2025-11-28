@@ -6,6 +6,16 @@ def mock_messagebox(*args):
     print(f'called wx.MessageBox with args', args)
 
 
+def mock_get_text_from_user(*args, **kwargs):
+    print(f'called wx.GetTextFromUser with args', args, kwargs)
+    return ''
+
+
+def mock_get_text_from_user_2(*args, **kwargs):
+    print(f'called wx.GetTextFromUser with args', args, kwargs)
+    return 'text from user'
+
+
 class MockApp:
     def __init__(self, *args):
         print('called app.__init__ with args', args)
@@ -15,6 +25,17 @@ class MockApp:
 
     def SetTopWindow(self, *args):
         print('called app.SetTopWindow with args', args)
+
+
+class MockControl:
+    def __init__(self):  # , *args, **kwargs):
+        print('called Control.__init__')  #  with args', args, kwargs)
+
+    def SetFocus(self):  #  , *args, **kwargs):
+        print('called Control.SetFocus')  #  with args', args, kwargs)
+
+    def Enable(self, value):  #  , *args, **kwargs):
+        print(f'called Control.Enable with arg {value}')  #  with args', args, kwargs)
 
 
 class MockFrame:
@@ -31,7 +52,9 @@ class MockFrame:
         print('called frame.Hide')
 
     def Bind(self, *args):
-        print('called Frame.Bind with args', args)
+        # bij meer dam twee argumenten zijn die vaak niet in de outputvoorspelling weer te geven,
+        # dus maar inslikken
+        print('called Frame.Bind with args', args[:2])
 
     def Connect(self, *args):
         print('called Frame.Connect with args', args)
@@ -197,7 +220,7 @@ class MockMenu:
 
 class MockMenuItem:
     def __init__(self, *args, **kwargs):
-        print('called MenuItem.__init__ with args', args)
+        print('called MenuItem.__init__ with args', args, kwargs)
 
     def GetId(self):  # , *args):
         print('called menuitem.GetId')  #  with args', args)
@@ -587,6 +610,9 @@ class MockStaticText:
     def __init__(self, *args, **kwargs):
         print('called StaticText.__init__ with args', args, kwargs)
 
+    def SetLabel(self, *args, **kwargs):
+        print('called StaticText.SetLabel with args', args, kwargs)
+
 
 class MockCheckBox:
     def __init__(self, *args, **kwargs):
@@ -600,6 +626,40 @@ class MockCheckBox:
     def GetValue(self):
         print(f'called checkbox.GetValue')
         return self._checked if self._checked is not None else 'value from checkbox'
+
+    def IsChecked(self):
+        print(f'called checkbox.IsChecked')
+        return self._checked if self._checked is not None else 'value from checkbox'
+
+    def Bind(self, *args, **kwargs):
+        print('called CheckBox.Bind with args', args, kwargs)
+
+    def GetId(self):  # , *args, **kwargs):
+        print('called CheckBox.GetId')  #  with args', args, kwargs)
+        return 'id'
+
+    def Clear(self):
+        print('called CheckBox.Clear')
+
+
+class MockCheckListBox:
+    def __init__(self, *args, **kwargs):
+        print('called CheckListBox.__init__ with args', args, kwargs)
+
+    def GetItems(self):
+        print(f'called CheckListBox.GetItems')
+        return ['item', 'list']
+
+    def Check(self, *args):
+        print(f'called CheckListBox.Check with args', args)
+
+    def IsChecked(self, arg):
+        print(f'called CheckListBox.IsChecked with arg {arg}')
+        return True
+
+    def GetCheckedStrings(self):
+        print('called CheckListBox.GetCheckedStrings')
+        return 'checked', 'strings'
 
 
 class MockTextCtrl:
@@ -627,8 +687,12 @@ class MockButton:
     def Bind(self, *args, **kwargs):
         print('called Button.Bind with args', args, kwargs)
 
+    def Enable(self, state):
+        print(f'called Button.Enable with arg {state}')
+
     def GetId(self):  # , *args, **kwargs):
         print('called Button.GetId')  #  with args', args, kwargs)
+        return 'id'
 
     def SetHelpText(self, value):
         print(f"called Button.SetHelpText with arg '{value}'")
@@ -656,6 +720,9 @@ class MockComboBox:
     def Clear(self):  # , *args):
         print('called combobox.clear')  #  with args', args)
 
+    def Bind(self, *args, **kwargs):
+        print('called ComboBox.Bind with args', args, kwargs)
+
     def AppendItems(self, *args):
         print(f'called combobox.AppendItems with args' ,args)
 
@@ -671,6 +738,24 @@ class MockComboBox:
     def GetValue(self):  # , *args):
         print(f'called combobox.GetValue')  #  with args', args)
         return 'value from combobox'
+
+    def AutoComplete(self, *args):
+        print(f'called combobox.AutoComplete with args', args)
+
+
+class MockSpinCtrl:
+    def __init__(self, *args, **kwargs):
+        print('called SpinCtrl.__init__ with args', args, kwargs)
+
+    def Bind(self, *args):
+        print('called SpinCtrl.bind with args', args)
+
+    def SetFocus(self):  # , *args):
+        print('called SpinCtrl.SetFocus')  #  with args', args)
+
+    def GetValue(self):  # , *args):
+        print(f'called SpinCtrl.GetValue')  #  with args', args)
+        return 'value from spinctrl'
 
 
 class MockListBox:
@@ -712,6 +797,66 @@ class MockListBox:
         print('called listbox.GetCount')
 
 
+class MockListItem:
+    def __init__(self, text):
+        self._itemtext = text
+    def __repr__(self):
+        return self._itemtext
+    def GetText(self):
+        return self._itemtext
+
+class MockListCtrl:
+    def __init__(self, *args, **kwargs):
+        print('called ListCtrl.__init__ with args', args, kwargs)
+        self._nextitemcounter = 0
+
+    def Bind(self, *args):
+        print('called ListCtrl.Bind with args', args)
+
+    def InsertColumn(self, *args):
+        print('called ListCtrl.InsertColumn with args', args)
+
+    def SetColumnWidth(self, *args):
+        print('called ListCtrl.SetColumnWidth with args', args)
+
+    def resizeLastColumn(self, *args):
+        # eigenlijk een methode van een mixin die we hierbij altijd gebruiken
+        print('called ListCtrl.resizeLastColumn with args', args)
+
+    def InsertItem(self, *args):
+        print('called ListCtrl.InsertItem with args', args)
+        return 'itemindex'
+
+    def SetItem(self, *args):
+        print('called ListCtrl.SetItem with args', args)
+
+    def GetItem(self, *args):
+        print('called ListCtrl.GetItem with args', args)
+        return args[0]
+
+    def DeleteAllItems(self, *args):
+        print('called ListCtrl.DeleteAllItems with args', args)
+
+    def GetFirstSelected(self):
+        print('called ListCtrl.getFirstSelected')
+        return -1
+
+    def GetFirstSelected_2(self):
+        print('called ListCtrl.getFirstSelected')
+        return MockListItem('first item')
+
+    def GetNextSelected(self, item):
+        print('called ListCtrl.getNextSelected')
+        self._nextitemcounter += 1
+        if self._nextitemcounter == 1:
+            return MockListItem('next item')
+        return -1
+
+class MockListCtrlAutoWidthMixin:
+    def __init__(self, *args, **kwargs):
+        print('called ListCtrlAutoWidthMixin.__init__ with args', args, kwargs)
+
+
 class MockDialog:
     def __init__(self, parent, *args, **kwargs):
         print('called Dialog.__init__ with args', args, kwargs)
@@ -728,6 +873,9 @@ class MockDialog:
 
     def Show(self):
         print('called Dialog.Show')
+
+    def EndModal(self, arg):
+        print(f'called Dialog.EndModal with arg {arg}')
 
     def ShowModal(self):
         print('called Dialog.ShowModal')
@@ -778,15 +926,20 @@ class MockDialog:
         print('called dialog.CreateButtonSizer with args', args)
 
     def Bind(self, *args):
-        print('called dialog.Bind with args', args)
+        # bij meer dam twee argumenten zijn die vaak niet in de outputvoorspelling weer te geven,
+        # dus maar inslikken
+        print('called dialog.Bind with args', args[:2])
 
     def Layout(self, *args):
         print('called dialog.Layout with args', args)
 
+    def SetFocus(self):
+        print('called dialog.SetFocus')
+
 
 class MockFileDialog:
     def __init__(self, parent, *args, **kwargs):
-        print('called TextDialog.__init__ with args', args, kwargs)
+        print('called FileDialog.__init__ with args', args, kwargs)
 
     def __enter__(self):
         return self
@@ -806,8 +959,34 @@ class MockFileDialog:
         print('called FileDialog.GetFilename')
         return 'filename'
 
+    def GetPath(self):
+        print('called FileDialog.GetPath')
+        return 'dirname/filename'
+
     def Destroy(self):
         print('called FileDialog.Destroy with args', args)
+
+
+class MockDirDialog:
+    def __init__(self, parent, *args, **kwargs):
+        print('called DirDialog.__init__ with args', args, kwargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return True
+
+    def ShowModal(self):
+        print('called DirDialog.ShowModal')
+        return wx.ID_OK
+
+    def GetPath(self):
+        print('called DirDialog.GetPath')
+        return 'dirname'
+
+    def Destroy(self):
+        print('called DirDialog.Destroy with args', args)
 
 
 class MockTextDialog:
@@ -901,3 +1080,33 @@ class MockBrowse:
 class MockColour:
     def __init__(self, *args):
         print('called colour.__init__ with args', args)
+
+
+class MockTextDataObject:
+    def __init__(self):
+        print('called TextDataObject.__init__')
+        self._text = '(None)'
+
+    def __str__(self):
+        return self._text
+
+    def SetText(self, text):
+        print(f"called TextDataObject.SetText with arg '{text}'")
+        self._text = text
+
+class MockClipboard:
+    @staticmethod
+    def Get():
+        print('called Clipboard.Get')
+        return MockClipboard()
+
+    def Open(self):
+        print('called Clipboard.Open')
+        return True
+
+    def SetData(self, data):
+        print(f"called Clipboard.SetData with arg '{data}'")
+
+    def Close(self):
+        print('called Clipboard.Close')
+
