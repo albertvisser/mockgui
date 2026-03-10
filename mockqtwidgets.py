@@ -42,6 +42,9 @@ class MockEvent:
         if 'key' in kwargs:
             self._key = kwargs['key']
 
+    def modifiers(self):
+        ""
+
     def key(self):
         return self._key
 
@@ -220,6 +223,13 @@ class MockWidget:
     def setEnabled(self, value):
         print(f'called Widget.setEnabled with arg {value}')
 
+    def isEnabled(self):
+        print(f'called Widget.isEnabled')
+        return 'is enabled'
+
+    def addAction(self, arg):
+        print('called Widget.addAction')
+
 
 class MockScrollBar:
     def __init__(self, *args):
@@ -279,7 +289,7 @@ class MockStackedWidget:
         return 'current widget'
 
     def widget(self, num):
-        print("called StackedWidget.widget with arg {num}")
+        print(f"called StackedWidget.widget with arg {num}")
         return 'widget'
 
 
@@ -382,11 +392,20 @@ class MockFrame:
     def show(self):
         print('called Frame.show')
 
+    def resize(self, *args):
+        print('called Frame.resize with args', args)
+
     def close(self):
         print('called Frame.close')
 
     def setMaximumHeight(self, number):
         print(f'called Frame.setMaximumHeight with arg `{number}`')
+
+    def setFixedHeight(self, number):
+        print(f'called Frame.setFixedHeight with arg `{number}`')
+
+    def addAction(self, arg):
+        print('called Frame.addAction')
 
 
 class MockPixmap:
@@ -1380,6 +1399,9 @@ class MockDialog:
     def addAction(self, arg):
         print('called Dialog.addAction')
 
+    def keyReleaseEvent(self, *args):
+        print('called Dialog.keyReleaseEvent with args', args)
+
 
 def get_item(parent, *args, **kwargs):
     print('called InputDialog.getItem with args', parent, args, kwargs)
@@ -1436,7 +1458,10 @@ class MockVBoxLayout:
 
     def addWidget(self, *args):
         # print('called VBox.addWidget')
-        print(f'called VBox.addWidget with arg {type(args[0]).__name__}')
+        if isinstance(args[0], str):
+            print(f"called VBox.addWidget with arg '{args[0]}'")
+        else:
+            print(f'called VBox.addWidget with arg {type(args[0]).__name__}')
         self._count += 1
 
     def addLayout(self, *args):
@@ -1486,10 +1511,11 @@ class MockHBoxLayout:
 
     def addWidget(self, *args, **kwargs):
         # print('called HBox.addWidget')
+        arg0 = args[0] if isinstance(args[0], str) else type(args[0]).__name__
         if kwargs:
-            print(f'called HBox.addWidget with arg {type(args[0]).__name__}, kwargs', kwargs)
+            print(f'called HBox.addWidget with args {arg0}', kwargs)
         else:
-            print(f'called HBox.addWidget with arg {type(args[0]).__name__}')
+            print(f'called HBox.addWidget with arg {arg0}')
         self._count += 1
 
     def addLayout(self, *args):
@@ -1606,6 +1632,7 @@ class MockLabel:
         self._text = text
 
     def text(self):
+        print('called Label.text')
         return self._text
 
     def setPixmap(self, data):
@@ -1632,11 +1659,11 @@ class MockCheckBox:
         if args:
             # print(f"called CheckBox.__init__ with text '{args[0]}'")
             print(f"called CheckBox.__init__ with args", args)
-            self.textvalue = args[0]
+            self._labeltext = args[0]
         else:
             print('called CheckBox.__init__')
-            self.textvalue = ''
-        self.checked = False
+            self._labeltext = ''
+        self._checked = False
 
     def setEnabled(self, value):
         print(f'called CheckBox.setEnabled with arg {value}')
@@ -1646,26 +1673,27 @@ class MockCheckBox:
 
     def setChecked(self, value):
         print(f'called CheckBox.setChecked with arg {value}')
-        self.checked = value
+        self._checked = value
 
     def setCheckable(self, state):
         print(f'called CheckBox.setCheckable with arg {state}')
-        self.checkable = state
+        self._checkable = state
 
     def toggle(self):
         print('called CheckBox.toggle')
-        self.checked = not self.checked
+        self._checked = not self._checked
 
     def isChecked(self):
         print('called CheckBox.isChecked')
-        return self.checked
+        return self._checked
 
     def checkState(self):
         print('called CheckBox.checkState')
-        return self.checked
+        return self._checked
 
     def text(self):
-        return self.textvalue
+        print('called CheckBox.text')
+        return self._labeltext
 
     def setFocus(self, *args):
         print('called CheckBox.setFocus')
@@ -1841,6 +1869,9 @@ class MockPushButton:
     def setMenu(self, *args):
         print('called PushButton.setMenu()')
 
+    def setFocus(self, *args):
+        print('called PushButton.setFocus')
+
     def setShortcut(self, *args):
         print('called PushButton.setShortcut with args', args)
 
@@ -1895,13 +1926,19 @@ class MockLineEdit:
     EchoMode = types.SimpleNamespace(Normal=0, Password=2)
 
     def __init__(self, *args):
-        print('called LineEdit.__init__')
+        # arguments = []
         for arg in args:
             if isinstance(arg, str):
+                # arguments.append(arg)
                 self._text = arg
                 break
+            # else:
+            #     arguments.append(type(arg).__name__)
         else:
+        # if not args:
             self._text = ''
+        #print('called LineEdit.__init__ with args', tuple(arguments))
+        print('called LineEdit.__init__ with args', args)
 
     def setReadOnly(self, value):
         print(f'called LineEdit.setReadOnly with arg `{value}`')
@@ -1973,7 +2010,10 @@ class MockButtonGroup:
         self._lastid = -1
 
     def addButton(self, button, buttonid=-1):
-        print(f"called ButtonGroup.addButton with arg {type(button).__name__}", end='')
+        if isinstance(button, str):
+            print(f"called ButtonGroup.addButton with arg {button}", end='')
+        else:
+            print(f"called ButtonGroup.addButton with arg {type(button).__name__}", end='')
         if buttonid == -1:
             print()
             self._lastid -= 1
@@ -1996,6 +2036,13 @@ class MockButtonGroup:
     def buttons(self, *args):
         print('called ButtonGroup.buttons')
         return list(self._buttons.values())
+
+    def checkedId(self):
+        print('called ButtonGroup.checkediId')
+        for button in self._buttons.keys():
+            if button.isChecked():
+                return button
+        return None
 
     def checkedButton(self):
         print('called ButtonGroup.checkedButton')
