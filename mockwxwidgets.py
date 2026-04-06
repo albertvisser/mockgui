@@ -82,6 +82,9 @@ class MockFrame:
         print('called Frame.CreateStatusBar')
         return MockStatusBar()
 
+    def SetStatusBar(self, *args):
+        print('called Frame.GetStatusBar with args', args)
+
     def GetStatusBar(self):
         print('called Frame.GetStatusBar')
         return MockStatusBar()
@@ -94,6 +97,10 @@ class MockFrame:
 
     def SetTitle(self, *args):
         print('called Frame.SetTitle with args', args)
+
+    def GetTitle(self, *args):
+        print('called Frame.GetTitle with args', args)
+        return 'frame title'
 
     def SetSizer(self, *args):
         print('called Frame.SetSizer with args', args)
@@ -127,7 +134,7 @@ class MockFrame:
     def Destroy(self, *args):
         print('called Frame.Destroy with args', args)
 
-    def Close(self, value):
+    def Close(self, value=False):
         print(f'called Frame.Close with arg {value}')
 
 
@@ -317,6 +324,10 @@ class MockMenuItem:
     def Check(self, value):
         print(f'called menuitem.Check with arg {value}')
 
+    def IsChecked(self):
+        print(f'called menuitem.IsChecked')
+        return 'value'
+
     def IsSubMenu(self):
         print(f'called menuitem.IsSubMenu')
         return False
@@ -329,6 +340,9 @@ class MockMenuItem:
 
     def SetItemLabel(self, arg):
         print(f"called menuitem.SetItemLabel with arg '{arg}'")
+
+    def SetHelp(self, arg):
+        print(f"called menuitem.SetHelp with arg '{arg}'")
 
 
 class MockToolBar:
@@ -441,6 +455,10 @@ class MockTree:
         print('called tree.AddRoot with args', args)
         return 'The Root'
 
+    def GetRootItem(self):
+        print('called tree.getRootItem')
+        return 'rootitem'
+
     def AddColumn(self, *args):
         print('called tree.AddColumn with args', args)
 
@@ -450,8 +468,18 @@ class MockTree:
     def SetColumnWidth(self, *args):
         print('called tree.SetColumnWidth with args', args)
 
-    def DeleteAllItems(self):  # , *args):
-        print('called tree.DeleteAllItems')  #  with args', args)
+    def DeleteAllItems(self):
+        print('called tree.DeleteAllItems')
+
+    def ItemHasChildren(self, *args):
+        print('called tree.ItemHasChildren with args', args)
+        return False
+
+    def ExpandAllChildren(self, *args):
+        print('called tree.ExpandAllChildren with args', args)
+
+    def CollapseAllChildren(self, *args):
+        print('called tree.CollapseAllChildren with args', args)
 
     def Bind(self, *args):
         # print('called tree.Bind() for method', str(args[1]).split()[2])
@@ -463,12 +491,27 @@ class MockTree:
     def Expand(self, *args):
         print('called tree.Expand with args', args)
 
+    def Collapse(self, *args):
+        print('called tree.Collapse with args', args)
+
+    def IsCollapsed(self, *args):
+        print('called tree.IsCollapsed with args', args)
+        return False
+
+    def IsExpanded(self, *args):
+        print('called tree.IsExpanded with args', args)
+        return False
+
     def SetItemBold(self, *args):
         # print(f'called tree.SetItemBold() using {args[1]}')
         print(f'called tree.SetItemBold with args', args)
 
     def SetFocus(self):
         print('called tree.SetFocus')
+
+    def HitTest(self, *args):
+        print('called tree.HitTest with args', args)
+        return None, 0
 
     def SelectItem(self, *args):
         print('called tree.SelectItem with args', args)
@@ -494,7 +537,7 @@ class MockTree:
 
     def GetItemData(self, *args):
         print('called tree.GetItemData with args', args)
-        return 'itemkey', 'itemtext', ['keyword']
+        return 'itemdata'
 
     def SetItemData(self, *args):
         print(f'called tree.SetItemData() with args', args)
@@ -515,19 +558,34 @@ class MockTree:
         print('called tree.PrependItem with args', args)
         return 'prepended item'
 
+    def InsertItem(self, *args):
+        print('called tree.InsertItem with args', args)
+        return 'inserted item'
+
     def Delete(self, *args):
         print('called tree.Delete with args', args)
 
+    def GetChildrenCount(self, *args):
+        print('called Tree.GetChildrenCount with args', args)
+        return 0
+
     def GetFirstChild(self, *args):
-        print('called tree.GetFirstChild')  #  with args', args)
-        return MockTreeItem('first item'), 0
+        print('called tree.GetFirstChild with args', args)
+        return MockTreeItem('first'), 0
 
     def GetNextChild(self, *args):
         cookie = args[1]
-        print('called tree.GetNextChild')  #  with args', args)
+        print('called tree.GetNextChild with args', args)
         if cookie == 0:
-            return MockTreeItem('next item'), 1
+            return MockTreeItem('next'), 1
         return MockTreeItem('not ok'), -1
+
+    def GetLastChild(self, *args):
+        print('called tree.GetLastChild with args', args)
+        return MockTreeItem('last')
+
+    def EnsureVisible(self, *args):
+        print('called tree.EnsureVisible with args', args)
 
 
 class MockTreeItem:
@@ -598,6 +656,12 @@ class MockEditor:   # actually a StyledTextCtrl
     def SetValue(self, value):
         print(f'called editor.SetValue with arg `{value}`')
 
+    def SetText(self, value):
+        print(f'called editor.SetText with arg `{value}`')
+
+    def SetReadOnly(self, value):
+        print(f'called editor.SetReadOnly with arg `{value}`')
+
     def GetValue(self):
         print('called editor.GetValue')
         return 'fake editor value'
@@ -651,6 +715,10 @@ class MockEvent:
         print('called event.GetSelection')
         return 'index'
 
+    def GetPosition(self):
+        print('called event.GetPosition')
+        return 'position'
+
     def GetX(self):
         print('called event.GetX')
         return 'x'
@@ -676,8 +744,8 @@ class MockEvent:
 
 
 class MockStatusBar:
-    def __init__(self):
-        print('called StatusBar.__init__')
+    def __init__(self, *args):
+        print('called StatusBar.__init__ with args', args)
     def SetStatusText(self, *args):
         print(f'called statusbar.SetStatusText with args', args)
     def SetFieldsCount(self, *args):
@@ -731,6 +799,10 @@ class MockGridSizer:
     def AddGrowableCol(self, *args):
         print(f'called GridSizer.AddGrowableCol with args', args)
 
+    def GetCols(self):
+        print('called GridSizer.Cols')
+        return 'cols'
+
 
 class MockFlexGridSizer:
     def __init__(self, *args, **kwargs):
@@ -755,6 +827,16 @@ class MockFlexGridSizer:
 class MockStaticLine:
     def __init__(self, *args, **kwargs):
         print('called StaticLine.__init__ with args', args, kwargs)
+
+
+class MockStaticBox:
+    def __init__(self, *args, **kwargs):
+        print('called StaticBox.__init__ with args', args, kwargs)
+
+
+# class MockStaticBoxSizer:
+#     def __init__(self, *args, **kwargs):
+#         print('called StaticBoxSizer.__init__ with args', args, kwargs)
 
 
 class MockStaticText:
@@ -788,6 +870,9 @@ class MockCheckBox:
     def GetId(self):  # , *args, **kwargs):
         print('called CheckBox.GetId')  #  with args', args, kwargs)
         return 'id'
+
+    def Enable(self, state):
+        print(f'called CheckBox.Enable with arg {state}')
 
     def Clear(self):
         print('called CheckBox.Clear')
@@ -1035,6 +1120,10 @@ class MockComboBox:
     def SetStringSelection(self, *args):
         print('called combobox.SetStringSelection with args', args)
 
+    def GetString(self, *args):
+        print('called combobox.GetString with args', args)
+        return f'str{args[0]}'
+
     def SetValue(self, *args):
         print('called combobox.SetValue with args', args)
 
@@ -1073,6 +1162,9 @@ class MockSpinCtrl:
     def SetValue(self, *args):
         print(f'called SpinCtrl.SetValue with args', args)
         self._value = args[0]
+
+    def SetMax(self, *args):
+        print(f'called SpinCtrl.SetMax with args', args)
 
     def SetRange(self, *args):
         print(f'called SpinCtrl.SetRange with args', args)
@@ -1279,20 +1371,35 @@ class MockListRowHighlighter:
 
 
 class MockGrid:
-    def __init__(self, *args):
-        print('called Grid.__init__ with args', args)
+    def __init__(self, *args, **kwargs):
+        print('called Grid.__init__ with args', args, kwargs)
 
     def CreateGrid(self, *args):
         print('called Grid.CreateGrid with args', args)
 
+    def Bind(self, *args):
+        print('called Grid.Bind with args', args)
+
     def SetRowLabelSize(self, *args):
         print('called Grid.SetRowLabelSize with args', args)
+
+    def SetRowLabelValue(self, *args):
+        print('called Grid.SetRowLabelValue with args', args)
 
     def SetColLabelValue(self, *args):
         print('called Grid.SetColLabelValue with args', args)
 
+    def SetColLabelSize(self, *args):
+        print('called Grid.SetColLabelSize with args', args)
+
     def SetColSize(self, *args):
         print('called Grid.SetColSize with args', args)
+
+    def SetReadOnly(self, *args):
+        print('called Grid.SetReadOnly with args', args)
+
+    def SetCellTextColour(self, *args):
+        print('called Grid.SetCellTextColour with args', args)
 
     def SetCellValue(self, *args):
         print('called Grid.SetCellValue with args', args)
@@ -1301,11 +1408,20 @@ class MockGrid:
         print('called Grid.GetCellValue with args', args)
         return f'value at {args}'
 
+    def SelectBlock(self, *args):
+        print('called Grid.SelectBlock with args', args)
+
     def AppendRows(self, *args):
         print('called Grid.AppendRows with args', args)
 
     def DeleteRows(self, *args):
         print('called Grid.DeleteRows with args', args)
+
+    def InsertCols(self, *args):
+        print('called Grid.InsertCols with args', args)
+
+    def DeleteCols(self, *args):
+        print('called Grid.DeleteCols with args', args)
 
     def ShowRow(self, *args):
         print('called Grid.ShowRow with args', args)
@@ -1642,3 +1758,12 @@ class MockEasyPrinting:
 
     def PreviewText(self, *args):
         print('called HtmlEasyPrinting.PreviewText with args', args)
+
+
+class MockWebView:
+    def New(self):
+        print('called WebView.New')
+        return MockWebView()
+
+    def SetPage(self, *args):
+        print('called WebView.SetPage with args', args)

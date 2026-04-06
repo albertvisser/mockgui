@@ -636,13 +636,16 @@ class MockHeader:
         print(f'called Header.setSectionResizeMode with args ({col}, {mode})')
 
     def setSectionsClickable(self, value):
-        print(f'called Header.setSectionsClickable with value {value}')
+        print(f'called Header.setSectionsClickable with arg {value}')
 
     def resizeSection(self, col, width):
         print(f'called Header.resizeSection with args ({col}, {width})')
 
     def setVisible(self, value):
-        print(f"called Header.setVisible with args '{value}'")
+        print(f"called Header.setVisible with arg {value}")
+
+    def setHorizontalHeaderLabels(self, value):
+        print(f"called Header.setHorizontalHeaderLabels with arg {value}")
 
 
 class MockTreeWidget:
@@ -1363,9 +1366,6 @@ class MockDialog:
     def __init__(self, parent=None, *args, **kwargs):
         self.parent = parent
         print('called Dialog.__init__ with args', parent, args, kwargs)
-
-    def exec_(self):  # Qt5
-        print('called Dialog.exec_')
 
     def exec(self):  # Qt6
         print('called Dialog.exec')
