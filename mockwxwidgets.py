@@ -92,6 +92,10 @@ class MockFrame:
     def SetToolBar(self, *args):
         print('called Frame.SetToolBar with args', args)
 
+    def GetToolBar(self, *args):
+        print('called Frame.GetToolBar with args', args)
+        return MockToolBar()
+
     def SetMenuBar(self, *args):
         print('called Frame.SetMenuBar with args', args)
 
@@ -226,6 +230,14 @@ class MockSize:
         return self.y
 
 
+class MockBitmap:
+    def __init__(self, *args):
+        print('called Bitmap.__init__ with args', args)
+        self._fname = args[0] if len(args) > 0 else ''
+    def __repr__(self):
+        return f"Bitmap created from '{self._fname}'"
+
+
 class MockIcon:
     def __init__(self, *args):
         print('called Icon.__init__ with args', args)
@@ -285,6 +297,9 @@ class MockMenu:
 
     def Destroy(self):  # , *args):
         print('called menu.Destroy')  #  with args', args)
+
+    def Delete(self, *args):
+        print('called menu.Delete with args', args)
 
     def Enable(self, *args):
         print(f'called menu.Enable with args', args)
@@ -456,7 +471,7 @@ class MockTree:
         return 'The Root'
 
     def GetRootItem(self):
-        print('called tree.getRootItem')
+        print('called tree.GetRootItem')
         return 'rootitem'
 
     def AddColumn(self, *args):
@@ -515,11 +530,19 @@ class MockTree:
 
     def SelectItem(self, *args):
         print('called tree.SelectItem with args', args)
-        return 'selected_item'
+        # return 'selected_item'
 
     def GetSelection(self):
         print('called tree.GetSelection')  #  with args', args)
         return 'selection'
+
+    def SetFocusedItem(self, *args):
+        print('called tree.SetFocusedItem with args', args)
+        # return 'focused_item'
+
+    def GetFocusedItem(self):
+        print('called tree.GetFocusedItem')  #  with args', args)
+        return 'focused item'
 
     def GetItemText(self, *args):
         print('called tree.GetItemText with args', args)
@@ -584,6 +607,9 @@ class MockTree:
         print('called tree.GetLastChild with args', args)
         return MockTreeItem('last')
 
+    def SortChildren(self, *args):
+        print('called tree.SortChildren with args', args)
+
     def EnsureVisible(self, *args):
         print('called tree.EnsureVisible with args', args)
 
@@ -613,12 +639,30 @@ class MockFont:
 
 
 class MockEditor:   # actually a StyledTextCtrl
-    def __init__(self, *args):
-        print('called Editor.__init__ with args', args)
+    def __init__(self, *args, **kwargs):
+        print('called Editor.__init__ with args', args, kwargs)
         self.IsModified = 'ismodified'
 
-    def Clear(self):  # , *args):
-        print('called editor.Clear')  #  with args', args)
+    def Clear(self):
+        print('called editor.Clear')
+
+    def Undo(self):
+        print('called editor.Undo')
+
+    def Redo(self):
+        print('called editor.Redo')
+
+    def Cut(self):
+        print('called editor.Cut')
+
+    def Copy(self):
+        print('called editor.Copy')
+
+    def Paste(self):
+        print('called editor.Paste')
+
+    def SelectAll(self):
+        print('called editor.SelectAll')
 
     def Enable(self, *args):
         print(f'called editor.Enable with args', args)
@@ -637,6 +681,18 @@ class MockEditor:   # actually a StyledTextCtrl
 
     def SetLexer(self, *args):
         print('called editor.SetLexer with args', args)
+
+    def SetStyle(self, *args):
+        print('called editor.SetStyle with args', args)
+
+    def BeginStyle(self, *args):
+        print('called editor.BeginStyle with args', args)
+
+    def BeginFont(self, *args):
+        print('called editor.BeginFont with args', args)
+
+    def BeginTextColour(self, *args):
+        print('called editor.BeginTextColour with args', args)
 
     def StyleSetForeground(self, *args):
         print('called editor.StyleSetForeground with args', args)
@@ -668,6 +724,20 @@ class MockEditor:   # actually a StyledTextCtrl
 
     def SetFocus(self):
         print('called editor.SetFocus')
+
+    def SetInsertionPoint(self, *args):
+        print('called editor.SetInsertionPoint with args', args)
+
+    def GetInsertionPoint(self):
+        print('called editor.GetInsertionPoint')
+        return 'insert here'
+
+    def GetSelectionRange(self, *args):
+        print('called editor.GetSelectionRange with args', args)
+        return 'range'
+
+    def ScrollIntoView(self, *args):
+        print('called editor.ScrollIntoView with args', args)
 
 
 class MockTrayIcon:
@@ -949,6 +1019,8 @@ class MockTextCtrl:
 
     def GetBuffer(self):
         print('called text.GetBuffer')
+        return MockBuffer()
+
     def GetInsertionPoint(self):
         print('called text.GetInsertionPoint')
         return 'insertion point'
@@ -1003,6 +1075,10 @@ class MockTextAttr:
         return 'leftindent'
     def SetFont(self, *args):
         print('called RichTextAttr.SetFont with args', args)
+    def SetTextColour(self, *args):
+        print('called RichTextAttr.SetTextColour with args', args)
+    def SetBackgroundColour(self, *args):
+        print('called RichTextAttr.SetBackgroundColour with args', args)
     def GetFont(self, *args):
         print('called RichTextAttr.GetFont')
         return 'Font'
@@ -1012,7 +1088,7 @@ class MockTextAttr:
         print('called RichTextAttr.GetParagraphSpacingAfter')
         return 100
     def SetParagraphSpacingAfter(self, *args):
-        print('called RichT/extAttr.SetParagraphSpacingAfter with args', args)
+        print('called RichTextAttr.SetParagraphSpacingAfter with args', args)
 
 
 class MockTextRange:

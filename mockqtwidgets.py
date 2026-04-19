@@ -512,7 +512,8 @@ class MockMenu:
 
     def removeAction(self, action):
         print(f'called Menu.removeaction with arg {action}')
-        self._actions.remove(action)
+        if self._actions and action in self._actions:
+            self._actions.remove(action)
 
     def setStatusTip(self, text):
         print(f"called Menu.setStatusTip with arg '{text}'")
