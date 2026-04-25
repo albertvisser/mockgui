@@ -372,13 +372,22 @@ class MockToolBar:
         return [(MockMenu(), 'label1'), (MockMenu(), 'label2')]
 
     def AddSeparator(self, *args):
-        print('called Toolbar.AddTool with args', args)
+        print('called Toolbar.AddSeparator with args', args)
 
-    def AddTool(self, *args):
-        print('called Toolbar.AddTool with args', args)
+    def AddTool(self, *args, **kwargs):
+        print('called Toolbar.AddTool with args', args, kwargs)
+
+    def AddCheckTool(self, *args, **kwargs):
+        print('called Toolbar.AddCheckTool with args', args, kwargs)
+
+    def AddControl(self, *args):
+        print('called Toolbar.AddControl with args', args)
 
     def Replace(self, *args):
         print('called Toolbar.Replace with args', args)
+
+    def SetToolBitmapSize(self, *args):
+        print('called Toolbar.SetToolBitmapSize with args', args)
 
     def Realize(self, *args):
         print('called Toolbar.Realize with args', args)
@@ -837,6 +846,9 @@ class MockBoxSizer:
         else:
             print(f'called {self.orient} sizer.Add with args {type(args[0]).__name__}', args[1:])
 
+    def Insert(self, *args):
+        print(f'called BoxSizer.Insert with args', args)
+
     def Remove(self, *args):
         print(f'called BoxSizer.Remove with args', args)
 
@@ -930,8 +942,11 @@ class MockCheckBox:
         print(f'called checkbox.GetValue')
         return self._checked if self._checked is not None else 'value from checkbox'
 
+    def Check(self, value):
+        print(f'called checkbox.Check with arg {value}')
+
     def IsChecked(self):
-        print(f'called checkbox.IsChecked')
+        print('called checkbox.IsChecked')
         return self._checked if self._checked is not None else 'value from checkbox'
 
     def Bind(self, *args, **kwargs):
