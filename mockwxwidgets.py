@@ -89,6 +89,9 @@ class MockFrame:
         print('called Frame.GetStatusBar')
         return MockStatusBar()
 
+    def SetStatusText(self, *args):
+        print(f'called Frame.SetStatusText with args', args)
+
     def SetToolBar(self, *args):
         print('called Frame.SetToolBar with args', args)
 
@@ -98,6 +101,9 @@ class MockFrame:
 
     def SetMenuBar(self, *args):
         print('called Frame.SetMenuBar with args', args)
+
+    def PopupMenu(self, *args, **kwargs):
+        print('called Frame.PopupMenu with args', args, kwargs)
 
     def SetTitle(self, *args):
         print('called Frame.SetTitle with args', args)
@@ -325,6 +331,10 @@ class MockMenu:
 class MockMenuItem:
     def __init__(self, *args, **kwargs):
         print('called MenuItem.__init__ with args', args, kwargs)
+        if len(args) >= 3:
+            self._label = args[2]
+        elif 'label' in kwargs:
+            self._label = kwargs['label']
 
     def GetId(self):  # , *args):
         print('called menuitem.GetId')  #  with args', args)
@@ -352,6 +362,10 @@ class MockMenuItem:
 
     def GetItemLabelText(self):
         print('called menuitem.GetItemLabelText')
+
+    def GetItemLabel(self):
+        print('called menuitem.GetItemLabel')
+        return self._label.split()[0]
 
     def SetItemLabel(self, arg):
         print(f"called menuitem.SetItemLabel with arg '{arg}'")
@@ -769,6 +783,8 @@ class MockAcceleratorEntry:
 
     def FromString(self, *args):
         print('called AcceleratorEntry.FromString with args', args)
+        if args[0] == 'wrong':
+            return False
         return True
 
 
@@ -1161,6 +1177,22 @@ class MockButton:
 
     def Hide(self):
         print('called Button.Hide')
+
+
+class MockBitmapButton:
+    def __init__(self, *args, **kwargs):
+        print('called BitmapButton.__init__ with args', args, kwargs)
+        self._label = kwargs.get('label', '')
+
+    def Bind(self, *args, **kwargs):
+        print('called BitmapButton.Bind with args', args, kwargs)
+
+    def GetBitmapLabel(self):
+        print('called BitmapButton.GetBitmapLabel')
+        return 'bitmap'
+
+    def SetBitmapLabel(self, *args):
+        print('called BitmapButton.SetBitmapLabel with args', args)
 
 
 class MockRadioButton:
@@ -1592,6 +1624,9 @@ class MockDialog:
     def SetSize(self, *args):
         print(f"called dialog.SetSize with args", args)
 
+    def SetMinSize(self, *args):
+        print(f"called dialog.SetMinSize with args", args)
+
     def SetAutoLayout(self, *args):
         print('called dialog.SetAutoLayout with args', args)
 
@@ -1612,6 +1647,9 @@ class MockDialog:
 
     def SetFocus(self):
         print('called dialog.SetFocus')
+
+    def Close(self):
+        print(f'called dialog.Close')
 
 
 class MockFileDialog:
@@ -1789,9 +1827,26 @@ class MockFileBrowse:
         print('called FileBrowseButton.Destroy with args', args)
 
 
+class MockBrush:
+    def __init__(self, *args):
+        print('called brush.__init__ with args', args)
+        self._color = args[0]
+
+    def __repr__(self):
+        return f'<<brush from color {self._color}>>'
+
+
 class MockColour:
     def __init__(self, *args):
         print('called colour.__init__ with args', args)
+
+
+class MockColourSelect:
+    def __init__(self, *args, **kwargs):
+        print('called colourselect.__init__ with args', args, kwargs)
+
+    def Bind(self, *args, **kwargs):
+        print('called colourselect.Bind with args', args, kwargs)
 
 
 class MockTextDataObject:
@@ -1858,3 +1913,14 @@ class MockWebView:
 
     def SetPage(self, *args):
         print('called WebView.SetPage with args', args)
+
+
+class MockMemoryDC:
+    def SelectObject(self, obj):
+        print(f'called memorydc.SelectObject with arg {obj}')
+
+    def SetBackground(self, brush):
+        print(f'called memorydc.SetBackground with arg {brush}')
+
+    def Clear(self):
+        print(f'called memorydc.Clear')
