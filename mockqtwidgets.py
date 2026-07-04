@@ -425,7 +425,7 @@ class MockPixmap:
 
 
 class MockIcon:
-    ThemeIcon = types.SimpleNamespace(EditClear='')
+    ThemeIcon = types.SimpleNamespace(EditClear='EditClear', SoftwareUpdateAvailable='Cogwheel')
     def __init__(self, arg):
         print(f'called Icon.__init__ with arg `{arg}`')
 
@@ -2218,7 +2218,7 @@ class MockListBox:
         try:
             result = self.list[row]
         except IndexError:
-            print(f"called List.item with arg {row}'")
+            print(f"called List.item with arg {row}")
             result = None
         return result
     # def setFocus(self, value):
@@ -2388,9 +2388,12 @@ class MockTable:
 
     def item(self, x, y):
         print(f"called Table.item with args ({x}, {y})")
-        with contextlib.suppress(KeyError):
-            return self._items[(x, y)]
-        return None
+        if self._items:
+            with contextlib.suppress(KeyError):
+                return self._items[(x, y)]
+            return None
+        else:
+            return f'tableitem at {x}, {y}'
 
     def clear(self):
         print("called Table.clear")
