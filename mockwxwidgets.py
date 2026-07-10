@@ -1353,6 +1353,8 @@ class MockListItem:
     def SetText(self, arg):
         print(f"called item.SetText with arg '{arg}'")
         self._itemtext = arg
+    def SetImage(self, arg):
+        print(f"called item.SetImage with arg '{arg}'")
     def SetWidth(self, arg):
         print(f"called item.SetWidth with arg {arg}")
     def GetData(self):
@@ -1434,6 +1436,9 @@ class MockListCtrl:
 
     def DeleteAllItems(self):
         print('called ListCtrl.DeleteAllItems')
+
+    def DeleteItem(self, *args):
+        print('called ListCtrl.DeleteItem with args', args)
 
     def RefreshRows(self):
         print('called ListCtrl.RefreshRows')
@@ -1602,6 +1607,9 @@ class MockDialog:
 
     def SetSizer(self, *args):
         print('called dialog.SetSizer with args', args)
+
+    def SetAutoLayout(self, *args):
+        print('called dialog.SetAutoLayout with args', args)
 
     def SetTitle(self, text):
         print(f"called dialog.SetTitle with arg '{text}'")
@@ -1885,6 +1893,14 @@ class MockImageList:
     def Add(self, *args):
         print('called ImageList.Add with args', args)
         return args[0]
+
+
+class MockArtProvider:
+    def __init__(self):
+        print('called ArtProvider.__init__')
+    def GetBitmap(self, *args):
+        print('called ArtProvider.GetBitmap with args', args)
+        return 'bitmap'
 
 
 class MockEmbeddedImage:

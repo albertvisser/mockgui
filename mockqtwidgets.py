@@ -745,7 +745,7 @@ class MockTreeWidget:
         return []
 
     def indexFromItem(self, item):
-        print('called Tree.indexFromItem with arg `{item}`')
+        print(f'called Tree.indexFromItem with arg `{item}`')
         return types.SimpleNamespace(row=lambda: 1, column=lambda: 0)
 
     def itemBelow(self, arg):
@@ -843,7 +843,6 @@ class MockTreeItem:
         with contextlib.suppress(IndexError):
             return self._text[col]
 
-
     def setData(self, *args):
         print('called TreeItem.setData with args', args)
         col, role, data = args
@@ -909,6 +908,9 @@ class MockTreeItem:
 
     def setFont(self, *args):
         print('called TreeItem.setFont')
+
+    def setIcon(self, *args):
+        print('called TreeItem.setIcon with args', args)
 
     def setForeground(self, *args):
         print('called TreeItem.setForeground with args', args)
